@@ -19,7 +19,7 @@ make check
 make run
 ```
 
-`make check` 当前结果：33 个测试通过；Ruff、格式、编译、SQL 分层、密钥扫描、历史变更
+`make check` 当前结果：37 个测试通过；Ruff、格式、编译、SQL 分层、密钥扫描、历史变更
 检查与 OpenSpec `--strict` 全部通过。
 
 ## 外部环境待办

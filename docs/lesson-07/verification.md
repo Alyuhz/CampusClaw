@@ -44,6 +44,9 @@ make check
 
 GitHub API 已确认 `main` 受保护，详见 `branch-protection.md`。
 
+PR [#1](https://github.com/Alyuhz/CampusClaw/pull/1) 已创建并请求 `jiaweigege` 评审；
+远端两个 `check` 任务均通过，合并状态为 `MERGEABLE`，评审状态为 `REVIEW_REQUIRED`。
+
 ## 尚未验证
 
 - WSL 未启用 Docker Desktop 集成，无法执行镜像构建和 Compose 运行；
