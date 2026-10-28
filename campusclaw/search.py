@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-import sqlite3
 
 from flask import Blueprint, g, request
 
@@ -44,10 +43,7 @@ def make_snippet(content: str, query: str, radius: int = 90) -> str:
 def search(class_id: str, query: str, limit: int) -> list[dict[str, object]]:
     terms = query_terms(query)
     fts_query = " OR ".join(f'"{term.replace(chr(34), chr(34) * 2)}"' for term in terms)
-    try:
-        rows = search_chunks_by_fts(class_id, fts_query, limit) if fts_query else []
-    except sqlite3.OperationalError:
-        rows = []
+    rows = search_chunks_by_fts(class_id, fts_query, limit) if fts_query else []
     if not rows:
         rows = search_chunks_by_like(class_id, terms[:12] or [query], limit)
     return [

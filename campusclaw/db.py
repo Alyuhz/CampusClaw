@@ -211,18 +211,21 @@ def create_material(
 
 
 def get_material_for_class(material_id: int, class_id: str) -> sqlite3.Row | None:
-    return (
+    row = (
         get_db()
         .execute(
             """
-        SELECT id, title, filename, created_at
+        SELECT id, class_id, title, filename, created_at
         FROM materials
-        WHERE id = ? AND class_id = ?
+        WHERE id = ?
         """,
-            (material_id, class_id),
+            (material_id,),
         )
         .fetchone()
     )
+    if row is None or row["class_id"] != class_id:
+        return None
+    return row
 
 
 def list_chunks(material_id: int, class_id: str) -> list[sqlite3.Row]:
@@ -242,24 +245,27 @@ def list_chunks(material_id: int, class_id: str) -> list[sqlite3.Row]:
 
 
 def search_chunks_by_fts(class_id: str, fts_query: str, limit: int) -> list[sqlite3.Row]:
-    return list(
-        get_db()
-        .execute(
-            """
-            SELECT
-                c.id, c.material_id, c.chunk_index, c.content, c.start_line, c.end_line,
-                m.title, bm25(chunks_fts) AS rank
-            FROM chunks_fts
-            JOIN chunks c ON c.id = chunks_fts.rowid
-            JOIN materials m ON m.id = c.material_id
-            WHERE chunks_fts MATCH ? AND c.class_id = ?
-            ORDER BY rank, c.id
-            LIMIT ?
-            """,
-            (fts_query, class_id, limit),
+    try:
+        return list(
+            get_db()
+            .execute(
+                """
+                SELECT
+                    c.id, c.material_id, c.chunk_index, c.content, c.start_line, c.end_line,
+                    m.title, bm25(chunks_fts) AS rank
+                FROM chunks_fts
+                JOIN chunks c ON c.id = chunks_fts.rowid
+                JOIN materials m ON m.id = c.material_id
+                WHERE chunks_fts MATCH ? AND c.class_id = ?
+                ORDER BY rank, c.id
+                LIMIT ?
+                """,
+                (fts_query, class_id, limit),
+            )
+            .fetchall()
         )
-        .fetchall()
-    )
+    except sqlite3.OperationalError:
+        return []
 
 
 def search_chunks_by_like(class_id: str, terms: list[str], limit: int) -> list[sqlite3.Row]:

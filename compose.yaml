@@ -4,7 +4,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${WEB_PORT:-5000}:8000"
+      - "${WEB_PORT}:8000"
     volumes:
       - campusclaw-data:/app/instance
     restart: unless-stopped

@@ -2,6 +2,17 @@ const state = { token: null, user: null };
 
 const $ = (id) => document.getElementById(id);
 
+function setBusy(button, busy) {
+  button.disabled = busy;
+  button.setAttribute("aria-busy", String(busy));
+}
+
+function setStatus(element, message, kind = "") {
+  element.textContent = message;
+  if (kind) element.dataset.state = kind;
+  else delete element.dataset.state;
+}
+
 async function request(path, options = {}) {
   const headers = options.headers || {};
   if (state.token) headers.Authorization = `Bearer ${state.token}`;
@@ -34,19 +45,28 @@ function showWorkspace() {
 }
 
 async function loadMaterials() {
-  const data = await request("/api/v1/materials");
   const list = $("materials");
   list.replaceChildren();
-  for (const item of data.items) {
-    const li = document.createElement("li");
-    li.textContent = `${item.title}（${item.created_at}）`;
-    list.append(li);
+  setStatus($("materials-status"), "正在加载资料…");
+  try {
+    const data = await request("/api/v1/materials");
+    for (const item of data.items) {
+      const li = document.createElement("li");
+      li.textContent = `${item.title}（${item.created_at}）`;
+      list.append(li);
+    }
+    if (!data.items.length) setStatus($("materials-status"), "本班暂无资料", "empty");
+    else setStatus($("materials-status"), "");
+  } catch (error) {
+    setStatus($("materials-status"), error.message, "error");
   }
-  if (!data.items.length) list.textContent = "本班暂无资料";
 }
 
-$("login").addEventListener("click", async () => {
-  $("auth-status").textContent = "正在登录…";
+$("auth-card").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("login");
+  setBusy(button, true);
+  setStatus($("auth-status"), "正在登录…");
   try {
     const data = await request("/api/v1/auth/login", {
       method: "POST",
@@ -54,43 +74,73 @@ $("login").addEventListener("click", async () => {
     });
     state.token = data.token;
     state.user = data.user;
-    $("auth-status").textContent = "";
+    setStatus($("auth-status"), "");
     showWorkspace();
     await loadMaterials();
   } catch (error) {
-    $("auth-status").textContent = error.message;
+    setStatus($("auth-status"), error.message, "error");
+  } finally {
+    setBusy(button, false);
   }
 });
 
 $("logout").addEventListener("click", async () => {
+  const button = $("logout");
+  setBusy(button, true);
   try {
     await request("/api/v1/auth/logout", { method: "POST" });
   } finally {
+    setBusy(button, false);
     state.token = null;
     state.user = null;
     showLogin();
   }
 });
 
-$("refresh").addEventListener("click", () => loadMaterials().catch((error) => alert(error.message)));
-
-$("upload-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  const form = new FormData();
-  form.append("title", $("title").value);
-  form.append("file", $("file").files[0]);
+$("refresh").addEventListener("click", async () => {
+  const button = $("refresh");
+  setBusy(button, true);
   try {
-    await request("/api/v1/materials", { method: "POST", body: form });
-    $("upload-form").reset();
     await loadMaterials();
-  } catch (error) {
-    alert(error.message);
+  } finally {
+    setBusy(button, false);
   }
 });
 
-$("search").addEventListener("click", async () => {
+$("upload-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("upload");
+  const status = $("upload-status");
+  const file = $("file").files[0];
+  if (!file) {
+    setStatus(status, "请选择 Markdown 或 TXT 文件", "error");
+    return;
+  }
+  const form = new FormData();
+  form.append("title", $("title").value);
+  form.append("file", file);
+  setBusy(button, true);
+  setStatus(status, "正在上传并建立索引…");
+  try {
+    await request("/api/v1/materials", { method: "POST", body: form });
+    $("upload-form").reset();
+    setStatus(status, "上传成功");
+    await loadMaterials();
+  } catch (error) {
+    setStatus(status, error.message, "error");
+  } finally {
+    setBusy(button, false);
+  }
+});
+
+$("search-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("search");
   const target = $("search-results");
+  const status = $("search-status");
   target.replaceChildren();
+  setBusy(button, true);
+  setStatus(status, "正在检索本班资料…");
   try {
     const data = await request(`/api/v1/search?q=${encodeURIComponent($("query").value)}`);
     for (const item of data.items) {
@@ -103,14 +153,20 @@ $("search").addEventListener("click", async () => {
       article.append(heading, text);
       target.append(article);
     }
-    if (!data.items.length) target.textContent = "资料中未找到相关内容";
+    if (!data.items.length) setStatus(status, "资料中未找到相关内容", "empty");
+    else setStatus(status, "");
   } catch (error) {
-    target.textContent = error.message;
+    setStatus(status, error.message, "error");
+  } finally {
+    setBusy(button, false);
   }
 });
 
-$("ask").addEventListener("click", async () => {
+$("ask-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const button = $("ask");
   const target = $("answer");
+  setBusy(button, true);
   target.textContent = "正在检索本班资料…";
   try {
     const data = await request("/api/v1/ask", {
@@ -135,6 +191,8 @@ $("ask").addEventListener("click", async () => {
     }
   } catch (error) {
     target.textContent = error.message;
+  } finally {
+    setBusy(button, false);
   }
 });
 

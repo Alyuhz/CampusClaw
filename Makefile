@@ -1,6 +1,7 @@
 PYTHON ?= .venv/bin/python
 UV ?= uv
 UV_CACHE_DIR ?= /tmp/campusclaw-uv-cache
+OPENSPEC ?= openspec
 
 .PHONY: setup run test lint compile secret-scan layout spec-check check
 
@@ -10,7 +11,7 @@ setup:
 	git config core.hooksPath .githooks || echo "warning: git config is read-only; enable .githooks manually"
 
 run:
-	$(PYTHON) -m flask --app 'campusclaw:create_app()' run --host 127.0.0.1 --port 5000
+	$(PYTHON) -m gunicorn --config gunicorn.conf.py 'campusclaw:create_app()'
 
 test:
 	$(PYTHON) -m pytest
@@ -30,5 +31,7 @@ layout:
 
 spec-check:
 	$(PYTHON) scripts/validate_change.py
+	$(OPENSPEC) validate --changes --strict --no-interactive
+	$(OPENSPEC) validate --archived --strict --no-interactive
 
 check: lint compile test layout secret-scan spec-check

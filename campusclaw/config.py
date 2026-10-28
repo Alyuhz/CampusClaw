@@ -34,12 +34,12 @@ def load_config(test_config: dict[str, Any] | None = None) -> dict[str, Any]:
         "SEED_TEACHER_PASSWORD": required("SEED_TEACHER_PASSWORD", "SEED_TEACHER_PASSWORD"),
         "SEED_STUDENT_PASSWORD": required("SEED_STUDENT_PASSWORD", "SEED_STUDENT_PASSWORD"),
         "GLM_API_KEY": environ.get("GLM_API_KEY", "").strip(),
-        "GLM_MODEL": environ.get("GLM_MODEL", "glm-4-flash").strip(),
-        "GLM_TEMPERATURE": float(environ.get("GLM_TEMPERATURE", "0.1")),
-        "GLM_TIMEOUT_SECONDS": int(environ.get("GLM_TIMEOUT_SECONDS", "15")),
-        "SEARCH_RESULT_LIMIT": int(environ.get("SEARCH_RESULT_LIMIT", "5")),
-        "MAX_UPLOAD_BYTES": int(environ.get("MAX_UPLOAD_BYTES", "1048576")),
-        "TOKEN_TTL_SECONDS": int(environ.get("TOKEN_TTL_SECONDS", "28800")),
+        "GLM_MODEL": required("GLM_MODEL", "GLM_MODEL"),
+        "GLM_TEMPERATURE": float(required("GLM_TEMPERATURE", "GLM_TEMPERATURE")),
+        "GLM_TIMEOUT_SECONDS": int(required("GLM_TIMEOUT_SECONDS", "GLM_TIMEOUT_SECONDS")),
+        "SEARCH_RESULT_LIMIT": int(required("SEARCH_RESULT_LIMIT", "SEARCH_RESULT_LIMIT")),
+        "MAX_UPLOAD_BYTES": int(required("MAX_UPLOAD_BYTES", "MAX_UPLOAD_BYTES")),
+        "TOKEN_TTL_SECONDS": int(required("TOKEN_TTL_SECONDS", "TOKEN_TTL_SECONDS")),
     }
     if supplied:
         config.update(supplied)

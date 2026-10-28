@@ -94,6 +94,14 @@ button.ghost {
   color: #6b625c;
 }
 
+.status[data-state="empty"] {
+  font-style: italic;
+}
+
+.status[data-state="error"] {
+  color: #991b1b;
+}
+
 .hidden {
   display: none;
 }

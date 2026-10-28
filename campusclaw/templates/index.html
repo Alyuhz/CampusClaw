@@ -15,51 +15,54 @@
       <small id="version">v{{ version }}</small>
     </header>
     <main>
-      <section class="card" id="auth-card">
+      <form class="card" id="auth-card">
         <h1>登录</h1>
         <p class="muted">演示账号：teacher-a / teacher-b / student-a / student-b</p>
-        <label>账号 <input id="username" autocomplete="username"></label>
-        <label>口令 <input id="password" type="password" autocomplete="current-password"></label>
-        <button id="login">登录</button>
-        <p class="status" id="auth-status"></p>
-      </section>
+        <label>账号 <input id="username" autocomplete="username" required></label>
+        <label>口令 <input id="password" type="password" autocomplete="current-password" required></label>
+        <button id="login" type="submit">登录</button>
+        <p class="status" id="auth-status" role="status" aria-live="polite"></p>
+      </form>
 
       <section class="workspace hidden" id="workspace">
         <div class="toolbar">
           <span id="who"></span>
-          <button class="ghost" id="refresh">刷新资料</button>
-          <button class="ghost" id="logout">退出</button>
+          <button class="ghost" id="refresh" type="button">刷新资料</button>
+          <button class="ghost" id="logout" type="button">退出</button>
         </div>
 
         <form class="card" id="upload-form">
           <h2>上传本班资料</h2>
           <p class="muted">仅教师可见；服务端仍会独立校验权限。</p>
           <label>标题（可选）<input id="title"></label>
-          <label>文件<input id="file" type="file" accept=".md,.txt"></label>
-          <button>上传</button>
+          <label>文件<input id="file" type="file" accept=".md,.txt" required></label>
+          <button id="upload" type="submit">上传</button>
+          <p class="status" id="upload-status" role="status" aria-live="polite"></p>
         </form>
 
         <section class="card">
           <h2>资料</h2>
+          <p class="status" id="materials-status" role="status" aria-live="polite"></p>
           <ul id="materials"></ul>
         </section>
 
         <section class="card">
           <h2>检索</h2>
-          <div class="row">
-            <input id="query" placeholder="输入课程关键词">
-            <button id="search">检索</button>
-          </div>
+          <form class="row" id="search-form">
+            <input id="query" placeholder="输入课程关键词" required>
+            <button id="search" type="submit">检索</button>
+          </form>
+          <p class="status" id="search-status" role="status" aria-live="polite"></p>
           <div id="search-results"></div>
         </section>
 
         <section class="card">
           <h2>带出处问答</h2>
-          <div class="row">
-            <input id="question" placeholder="向本班资料提问">
-            <button id="ask">提问</button>
-          </div>
-          <article id="answer"></article>
+          <form class="row" id="ask-form">
+            <input id="question" placeholder="向本班资料提问" required>
+            <button id="ask" type="submit">提问</button>
+          </form>
+          <article id="answer" aria-live="polite"></article>
         </section>
       </section>
     </main>

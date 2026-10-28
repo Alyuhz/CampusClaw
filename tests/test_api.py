@@ -2,10 +2,13 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import urllib.error
 from pathlib import Path
 
+import campusclaw.app as campus_app
 import campusclaw.assistant as assistant
+from campusclaw.http import JsonFormatter
 
 
 def upload_material(client, headers, title: str, content: str):
@@ -29,6 +32,36 @@ def test_health_is_public_and_structured(client):
     assert body["data"]["status"] == "ok"
     assert body["data"]["dependencies"]["database"] == "ok"
     assert response.headers["X-Request-ID"]
+
+
+def test_request_log_is_one_json_line_with_matching_request_id(client):
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(JsonFormatter())
+    client.application.logger.addHandler(handler)
+    try:
+        response = client.get("/health", headers={"X-Request-ID": "lesson07-request"})
+    finally:
+        client.application.logger.removeHandler(handler)
+
+    output = stream.getvalue().strip().splitlines()
+    assert len(output) == 1
+    record = json.loads(output[0])
+    assert record["request_id"] == response.headers["X-Request-ID"] == "lesson07-request"
+    assert record["method"] == "GET"
+    assert record["path"] == "/health"
+    assert record["status"] == 200
+    assert logging.getLogger("werkzeug").disabled
+
+
+def test_health_reports_database_dependency_failure(client, monkeypatch):
+    monkeypatch.setattr(campus_app, "database_is_ready", lambda: False)
+
+    response = client.get("/health")
+
+    assert response.status_code == 503
+    assert response.get_json()["data"]["status"] == "degraded"
+    assert response.get_json()["data"]["dependencies"]["database"] == "unavailable"
 
 
 def test_login_failures_do_not_reveal_existing_account(client):
@@ -66,10 +99,13 @@ def test_only_teachers_can_upload(client, login):
     student = login("student-a")
     teacher = login("teacher-a")
 
+    before = client.get("/api/v1/materials", headers=student).get_json()["data"]["items"]
     denied = upload_material(client, student, "资料", "普通学生不能上传")
+    after_denied = client.get("/api/v1/materials", headers=student).get_json()["data"]["items"]
     allowed = upload_material(client, teacher, "事务资料", "事务隔离级别包括读已提交。")
 
     assert denied.status_code == 403
+    assert after_denied == before
     assert allowed.status_code == 201
     assert allowed.get_json()["data"]["chunks"] >= 1
 
@@ -161,6 +197,19 @@ def test_class_id_from_query_is_ignored(client, login):
 
     assert response.status_code == 200
     assert response.get_json()["data"]["items"] == []
+
+
+def test_search_rejects_invalid_query_and_limit_without_full_scan(client, login):
+    student = login("student-a")
+
+    empty_query = client.get("/api/v1/search?q=", headers=student)
+    bad_limit = client.get("/api/v1/search?q=事务&limit=21", headers=student)
+
+    assert empty_query.status_code == 400
+    assert empty_query.get_json()["code"] == 1101
+    assert bad_limit.status_code == 400
+    assert bad_limit.get_json()["code"] == 1101
+    assert bad_limit.get_json()["data"] is None
 
 
 def test_upload_rejects_unsupported_file_type(client, login):
