@@ -14,6 +14,11 @@ alwaysApply: false
 - 参数校验在路由边界完成；业务层只接收已校验数据。错误码集中在 `campusclaw/http.py`。
 - 写接口必须声明幂等性。唯一性由存储层约束保证，不以“先查后写”代替。
 - SQL 只允许出现在 `campusclaw/db.py`。数据访问函数显式接收 `class_id`，不得依赖全局状态。
+- 非法筛选、未知枚举和越界分页必须返回 400；不得忽略条件后返回全量数据。
+- 一个业务事务只能包含本地数据库操作；模型、HTTP、文件系统和消息队列调用必须在事务外。
+- 所有列表排序必须有唯一兜底键，例如 `created_at DESC, id DESC`，避免相同时间值导致
+  分页抖动。跨班和不存在资源必须在服务端生成相同 404 响应体。
 - 必需配置缺失时启动失败，不使用默认密钥或默认数据库路径。
 
-检查：`python scripts/check_layout.py`；新增接口响应复用 `api_response`；故意移除鉴权后接口测试应失败。
+检查：`python scripts/check_layout.py`；`rg 'import sqlite3' campusclaw --glob '!db.py'`
+无结果；新增接口响应复用 `api_response`；非法筛选测试返回 400；故意移除鉴权后测试失败。

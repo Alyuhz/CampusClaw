@@ -12,6 +12,7 @@ ENV_SECRET = re.compile(
     r"SEED_STUDENT_PASSWORD)[ \t]*=[ \t]*([^\s#]+)",
     re.M,
 )
+ENV_ASSIGNMENT = re.compile(r"^[ \t]*([A-Z][A-Z0-9_]*)[ \t]*=[ \t]*([^#\n]*)", re.M)
 TOKEN_PATTERNS = (
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
     re.compile(r"\bsk-[A-Za-z0-9_-]{20,}\b"),
@@ -69,9 +70,9 @@ def main() -> int:
         except UnicodeDecodeError:
             continue
         if path.name == ".env.example":
-            for match in ENV_SECRET.finditer(text):
+            for match in ENV_ASSIGNMENT.finditer(text):
                 if match.group(2).strip():
-                    findings.append(f"secret-like value in example: {path.name}:{match.group(1)}")
+                    findings.append(f"non-empty value in example: {path.name}:{match.group(1)}")
         for pattern in TOKEN_PATTERNS:
             if pattern.search(text):
                 findings.append(f"secret-like token in {path.relative_to(ROOT)}")

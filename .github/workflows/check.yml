@@ -13,5 +13,9 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --global @fission-ai/openspec@1.13.0
       - run: pip install -r requirements-dev.txt
       - run: make check PYTHON=python

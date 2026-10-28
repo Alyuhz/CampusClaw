@@ -72,14 +72,16 @@ CampusClaw 是一个基于 Flask 和 RAG（检索增强生成）技术开发的 
 cp .env.example .env
 ```
 
-编辑 `.env`，至少填写：
+编辑 `.env`，填写示例中的全部空值：
 
 - `FLASK_SECRET_KEY`、`JWT_SECRET_KEY`：两段不同的随机长字符串；
 - `SEED_TEACHER_PASSWORD`、`SEED_STUDENT_PASSWORD`：本地演示账号口令；
 - `DATABASE_PATH=instance/campusclaw.sqlite3`；
-- `GLM_API_KEY`：可留空，应用将使用抽取式回答。
+- `APP_VERSION`、`WEB_PORT`、`GLM_MODEL`、`GLM_TEMPERATURE`、`GLM_TIMEOUT_SECONDS`、
+  `MAX_UPLOAD_BYTES`、`TOKEN_TTL_SECONDS`、`SEARCH_RESULT_LIMIT`：显式填写运行值；
+- `GLM_API_KEY`：唯一允许留空的键；为空时应用使用抽取式回答。
 
-缺少必需配置时应用会直接启动失败，不会使用默认密钥。
+代码不提供配置默认值。除 `GLM_API_KEY` 外，任一键缺失或为空时应用都会直接启动失败。
 
 ### 2. 安装依赖
 
@@ -96,13 +98,21 @@ python -m venv .venv
 pip install -r requirements-dev.lock
 ```
 
+仓库使用 OpenSpec 1.13 做严格规约校验。运行 `make check` 前需在 PATH 中提供
+`openspec`，例如：
+
+```bash
+npm install --global @fission-ai/openspec@1.13.0
+```
+
 ### 3. 启动
 
 ```bash
 make run
 ```
 
-访问 <http://127.0.0.1:5000/>，健康检查为 <http://127.0.0.1:5000/health>。
+启动使用 Gunicorn 和 `.env` 中的 `WEB_PORT`。访问 <http://127.0.0.1:5000/>，
+健康检查为 <http://127.0.0.1:5000/health>（端口以本机配置为准）。
 
 开发演示账号：
 
@@ -168,8 +178,8 @@ curl --fail http://127.0.0.1:5000/health
 make check
 ```
 
-门禁依次检查 Ruff 格式与静态规则、Python 编译、Pytest、SQL 分层、密钥扫描与归档变更
-规约。任一子项非零退出即失败。
+门禁依次检查 Ruff 格式与静态规则、Python 编译、Pytest、SQL 与导入分层、密钥扫描、
+历史变更检查和 OpenSpec `--strict` 校验。任一子项非零退出即失败。
 
 接口测试覆盖登录、退出、角色限制、跨班访问、伪造班级参数、检索隔离、带出处回答、
 无依据拒绝和上传格式；跨班与不存在资料的 404 响应体逐字节比较。
@@ -200,6 +210,7 @@ make check
 - `openspec/changes/archive/`：已归档的四份变更规约与场景；
 - `skills/`：按场景执行的 Codex 技能；
 - `docs/`：API、数据字典、运行维护与验证记录；
+- `docs/lesson-07/`：第 7 课规约追踪、验证与交叉评审记录；
 - `tests/`：自动化回归用例；
 - `Makefile`、`Dockerfile`、`compose.yaml`：本地与容器入口。
 

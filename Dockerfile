@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir --no-index --find-links=/wheels /wheels/* \
     && rm -rf /wheels
 
 COPY --chown=campusclaw:campusclaw campusclaw ./campusclaw
+COPY --chown=campusclaw:campusclaw gunicorn.conf.py ./gunicorn.conf.py
 RUN mkdir -p /app/instance && chown campusclaw:campusclaw /app/instance
 
 USER campusclaw
@@ -24,4 +25,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=5s --retries=3 \
   CMD ["python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2)"]
 
-CMD ["gunicorn", "--factory", "--bind", "0.0.0.0:8000", "--workers", "2", "campusclaw:create_app"]
+CMD ["gunicorn", "--config", "gunicorn.conf.py", "--bind", "0.0.0.0:8000", "--workers", "2", "campusclaw:create_app()"]

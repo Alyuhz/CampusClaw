@@ -19,6 +19,7 @@ SQL_PATTERN = re.compile(
     )""",
     flags=re.I | re.X,
 )
+SQLITE_IMPORT_PATTERN = re.compile(r"^\s*(?:import sqlite3|from sqlite3\s+import)\b")
 
 
 def main() -> int:
@@ -42,6 +43,11 @@ def main() -> int:
             if SQL_PATTERN.search(line):
                 errors.append(
                     f"SQL outside campusclaw/db.py: {path.relative_to(ROOT)}:{line_number}"
+                )
+            if SQLITE_IMPORT_PATTERN.search(line):
+                errors.append(
+                    f"sqlite3 import outside campusclaw/db.py: "
+                    f"{path.relative_to(ROOT)}:{line_number}"
                 )
 
     for error in errors:

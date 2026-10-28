@@ -51,6 +51,12 @@ def configure_logging(app: Flask) -> None:
     app.logger.setLevel(logging.INFO)
     app.logger.propagate = False
 
+    # The application access log is the single structured request record. Keeping
+    # Werkzeug's default access logger would emit a duplicate plain-text line.
+    werkzeug_logger = logging.getLogger("werkzeug")
+    werkzeug_logger.handlers.clear()
+    werkzeug_logger.disabled = True
+
 
 def register_http(app: Flask) -> None:
     @app.before_request
