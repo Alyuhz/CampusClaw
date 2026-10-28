@@ -1,0 +1,3 @@
+interface:
+  display_name: "CampusClaw 数据变更"
+  short_description: "验证迁移、回滚、班级归属和删除副本"

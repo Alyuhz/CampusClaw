@@ -1,0 +1,3 @@
+interface:
+  display_name: "CampusClaw 按规范发布"
+  short_description: "执行检查、构建、健康验证与发布留痕"

@@ -1,0 +1,17 @@
+---
+description: CampusClaw 构建、运行与发布规则
+globs: Dockerfile,compose.yaml,.github/**/*,scripts/**/*
+alwaysApply: false
+---
+
+# 部署运维规范
+
+- `Dockerfile` 分阶段构建；最终镜像不包含编译器、测试或开发依赖；镜像使用版本或提交号标签。
+- 开发、测试、生产使用同一镜像，只替换 `.env` 配置；容器内应用使用非 root 用户。
+- `/health` 免认证，返回版本、UTC 时间与数据库连通状态；健康检查失败时返回非 2xx。
+- 日志为单行 JSON，包含时间、级别、模块、`request_id`、方法、路径、状态和耗时；不记录秘密或资料原文。
+- 发布顺序：测试 → 构建并打提交号 → 备份 → 数据库兼容迁移 → 启动新版本 → 健康检查 → 接流量
+  → 记录版本与验证结论。
+- 回滚只回到上一版本标签。每次迭代演练一次并记录耗时；数据迁移必须向后兼容。
+
+检查：`docker compose config`、容器 healthcheck、`GET /health`、一次回滚演练记录。

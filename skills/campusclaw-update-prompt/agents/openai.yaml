@@ -1,0 +1,3 @@
+interface:
+  display_name: "CampusClaw 更新提示词"
+  short_description: "版本化修改提示词并运行引用与拒答评测"

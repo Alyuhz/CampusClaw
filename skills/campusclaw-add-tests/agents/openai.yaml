@@ -1,0 +1,3 @@
+interface:
+  display_name: "CampusClaw 按规范补测试"
+  short_description: "从规约场景补齐行为与班级隔离测试"

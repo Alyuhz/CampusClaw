@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CampusClaw</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  </head>
+  <body>
+    <header>
+      <div>
+        <strong>CampusClaw</strong>
+        <span>班级课程知识库</span>
+      </div>
+      <small id="version">v{{ version }}</small>
+    </header>
+    <main>
+      <section class="card" id="auth-card">
+        <h1>登录</h1>
+        <p class="muted">演示账号：teacher-a / teacher-b / student-a / student-b</p>
+        <label>账号 <input id="username" autocomplete="username"></label>
+        <label>口令 <input id="password" type="password" autocomplete="current-password"></label>
+        <button id="login">登录</button>
+        <p class="status" id="auth-status"></p>
+      </section>
+
+      <section class="workspace hidden" id="workspace">
+        <div class="toolbar">
+          <span id="who"></span>
+          <button class="ghost" id="refresh">刷新资料</button>
+          <button class="ghost" id="logout">退出</button>
+        </div>
+
+        <form class="card" id="upload-form">
+          <h2>上传本班资料</h2>
+          <p class="muted">仅教师可见；服务端仍会独立校验权限。</p>
+          <label>标题（可选）<input id="title"></label>
+          <label>文件<input id="file" type="file" accept=".md,.txt"></label>
+          <button>上传</button>
+        </form>
+
+        <section class="card">
+          <h2>资料</h2>
+          <ul id="materials"></ul>
+        </section>
+
+        <section class="card">
+          <h2>检索</h2>
+          <div class="row">
+            <input id="query" placeholder="输入课程关键词">
+            <button id="search">检索</button>
+          </div>
+          <div id="search-results"></div>
+        </section>
+
+        <section class="card">
+          <h2>带出处问答</h2>
+          <div class="row">
+            <input id="question" placeholder="向本班资料提问">
+            <button id="ask">提问</button>
+          </div>
+          <article id="answer"></article>
+        </section>
+      </section>
+    </main>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

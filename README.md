@@ -7,17 +7,33 @@ CampusClaw 是一个基于 Flask 和 RAG（检索增强生成）技术开发的 
 
 系统以班级课程资料为知识来源，结合全文检索与大语言模型生成回答，并提供引用来源，帮助学生快速查找和理解课程知识，同时支持班级级别的数据隔离与权限管理。
 
+## 当前完成状态
+
+仓库已从“只有项目说明”补齐为可运行骨架：
+
+- 登录、退出与令牌吊销；
+- 教师上传 Markdown/TXT、自动切片与本班范围 FTS5 索引；
+- 本班资料列表、详情和关键词检索；
+- 带真实切片的问答；无依据时拒绝生成引用；
+- 可选智谱 GLM 调用，未配置 Key 时使用确定性抽取式回答并标记降级；
+- 免认证 `/health`、统一错误结构、请求标识与单行 JSON 日志；
+- Pytest 接口/单元测试、Ruff、布局检查、密钥扫描和变更规约校验；
+- Dockerfile、Compose、健康检查、CI 与 Git 提交前钩子。
+
+本地验证机器未安装 Docker，因此容器构建和真实 GLM 调用仍需在具备相应环境与 Key 的机器上
+完成最终联调；其余代码、接口与门禁可在本机执行。
+
 ## 一、核心功能
 
 ### 1. 用户与班级管理
 
 - 支持教师、学生两类用户登录
 - 根据用户身份和所属班级控制访问权限
-- 不同班级的资料、检索结果和问答上下文相互隔离
+- 不同班级的资料、检索结果和问答依据相互隔离
 
 ### 2. 课程资料管理
 
-- 支持教师上传、查看和管理课程资料
+- 支持教师上传和查看课程资料
 - 支持 Markdown、TXT 等文本格式
 - 自动提取文本、切分知识片段并建立检索索引
 
@@ -26,7 +42,7 @@ CampusClaw 是一个基于 Flask 和 RAG（检索增强生成）技术开发的 
 - 基于 SQLite FTS5 实现全文检索
 - 支持关键词查询课程资料
 - 返回相关原文片段、资料来源及行号
-- 支持资料名称筛选和检索结果排序
+- 检索结果按相关度排序
 
 ### 4. 智能知识问答
 
@@ -50,52 +66,60 @@ CampusClaw 是一个基于 Flask 和 RAG（检索增强生成）技术开发的 
 
 ## 三、本地运行
 
-### 1. 获取项目代码
+### 1. 准备配置
 
 ```bash
-git clone <仓库地址>
-cd CampusClaw
+cp .env.example .env
 ```
 
-### 2. 创建虚拟环境
+编辑 `.env`，至少填写：
+
+- `FLASK_SECRET_KEY`、`JWT_SECRET_KEY`：两段不同的随机长字符串；
+- `SEED_TEACHER_PASSWORD`、`SEED_STUDENT_PASSWORD`：本地演示账号口令；
+- `DATABASE_PATH=instance/campusclaw.sqlite3`；
+- `GLM_API_KEY`：可留空，应用将使用抽取式回答。
+
+缺少必需配置时应用会直接启动失败，不会使用默认密钥。
+
+### 2. 安装依赖
+
+```bash
+make setup
+```
+
+`make setup` 使用 `uv` 创建 `.venv`、安装开发依赖并尝试启用仓库钩子。也可在支持
+`ensurepip` 的环境中自行执行：
 
 ```bash
 python -m venv .venv
+. .venv/bin/activate
+pip install -r requirements-dev.lock
 ```
 
-激活虚拟环境：
-
-Windows：
+### 3. 启动
 
 ```bash
-.venv\Scripts\activate
+make run
 ```
 
-macOS / Linux：
+访问 <http://127.0.0.1:5000/>，健康检查为 <http://127.0.0.1:5000/health>。
+
+开发演示账号：
+
+- `teacher-a`、`student-a`：属于 `class-a`；
+- `teacher-b`、`student-b`：属于 `class-b`；
+- 口令分别取自 `SEED_TEACHER_PASSWORD` 与 `SEED_STUDENT_PASSWORD`。
+
+### 4. 容器启动
+
+安装 Docker 后执行：
 
 ```bash
-source .venv/bin/activate
+docker compose up --build -d
+curl --fail http://127.0.0.1:5000/health
 ```
 
-### 3. 安装依赖
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. 配置环境变量
-
-根据项目实际配置文件设置运行参数及大语言模型 API Key。
-
-请勿将真实 API Key 提交到 Git 仓库。
-
-### 5. 启动项目
-
-根据项目实际入口文件启动 Flask 服务。
-
-启动后，在浏览器中访问本地服务地址。
-
-> 注意：具体启动命令、端口及环境变量名称将在项目代码确定后补充。
+若修改了 `WEB_PORT`，请同步替换访问端口。
 
 ## 四、系统工作流程
 
@@ -103,7 +127,7 @@ pip install -r requirements.txt
 2. 系统提取资料正文，切分知识片段并建立全文检索索引。
 3. 学生登录后输入课程相关问题。
 4. 系统根据用户所属班级检索相关知识片段。
-5. 大语言模型结合检索结果生成回答。
+5. 配置模型 Key 时由大语言模型结合检索结果生成回答；否则使用确定性抽取式回答。
 6. 系统返回回答及引用来源，供学生查看和核验。
 
 ## 五、后续扩展计划
@@ -138,20 +162,51 @@ pip install -r requirements.txt
 
 ## 六、测试与部署
 
-项目计划使用 Pytest 对以下功能进行自动化测试：
+一条命令执行全部门禁：
 
-- 用户身份认证
-- 班级权限隔离
-- 课程资料上传与管理
-- 全文检索
-- 智能问答接口
+```bash
+make check
+```
 
-部署方面计划使用 Docker Compose 统一开发与运行环境，并提供健康检查接口。
+门禁依次检查 Ruff 格式与静态规则、Python 编译、Pytest、SQL 分层、密钥扫描与归档变更
+规约。任一子项非零退出即失败。
 
-具体测试命令与部署步骤将在相关功能完成后补充。
+接口测试覆盖登录、退出、角色限制、跨班访问、伪造班级参数、检索隔离、带出处回答、
+无依据拒绝和上传格式；跨班与不存在资料的 404 响应体逐字节比较。
 
-## 七、项目说明
+部署使用多阶段 Dockerfile 与 Compose，并提供 `/health` 健康检查。发布前必须记录版本、
+验证结论与回滚步骤；具体规则见 `.cursor/rules/ops.mdc` 和 `docs/operations.md`。
+
+## 七、接口与工程资产
+
+主要 API：
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| GET | `/health` | 健康检查，无需认证 |
+| POST | `/api/v1/auth/login` | 登录并获取 Bearer token |
+| POST | `/api/v1/auth/logout` | 吊销当前会话 |
+| GET | `/api/v1/me` | 当前用户与班级 |
+| GET | `/api/v1/materials` | 本班资料列表 |
+| POST | `/api/v1/materials` | 教师上传本班资料 |
+| GET | `/api/v1/materials/{id}` | 本班资料详情与切片 |
+| GET | `/api/v1/search?q=` | 本班资料检索 |
+| POST | `/api/v1/ask` | 带真实出处回答 |
+
+工程资产：
+
+- `AGENTS.md`：常驻工程约束与完成定义；
+- `.cursor/rules/`：产品、后端、安全、测试、运维、AI、数据与评审规范；
+- `openspec/changes/archive/`：已归档的四份变更规约与场景；
+- `skills/`：按场景执行的 Codex 技能；
+- `docs/`：API、数据字典、运行维护与验证记录；
+- `tests/`：自动化回归用例；
+- `Makefile`、`Dockerfile`、`compose.yaml`：本地与容器入口。
+
+## 八、项目说明
 
 本项目为课程小组实践项目，基于已有班级知识库原型进行功能完善与扩展。
 
 项目重点在于将课程资料管理、全文检索和大语言模型问答相结合，实现具有来源追溯能力和班级数据隔离机制的智能学习辅助系统。
+
+当前未选择开源许可证；对外发布或复用前需由项目组明确许可方式。

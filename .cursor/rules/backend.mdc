@@ -1,0 +1,19 @@
+---
+description: CampusClaw Flask 后端结构与接口契约
+globs: campusclaw/**/*.py
+alwaysApply: false
+---
+
+# 后端开发规范
+
+- 依赖方向：`app` 装配 → `auth`/`materials`/`search`/`assistant` 业务能力 → `db` 持久层。
+  业务模块不得直接导入 `sqlite3` 或执行 SQL。
+- 路径统一使用 `/api/v1/`；资源使用小写复数；HTTP 方法遵循 GET/POST/PUT/PATCH/DELETE 语义。
+- 所有 JSON 响应使用 `{code, message, data}`；业务成功码为 `0`，请求标识只放
+  `X-Request-ID` 响应头，保证跨班与不存在响应体可逐字节比较。
+- 参数校验在路由边界完成；业务层只接收已校验数据。错误码集中在 `campusclaw/http.py`。
+- 写接口必须声明幂等性。唯一性由存储层约束保证，不以“先查后写”代替。
+- SQL 只允许出现在 `campusclaw/db.py`。数据访问函数显式接收 `class_id`，不得依赖全局状态。
+- 必需配置缺失时启动失败，不使用默认密钥或默认数据库路径。
+
+检查：`python scripts/check_layout.py`；新增接口响应复用 `api_response`；故意移除鉴权后接口测试应失败。

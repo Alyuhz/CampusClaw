@@ -1,0 +1,17 @@
+---
+description: CampusClaw 产品与前端一致性规则
+globs: campusclaw/templates/**/*,campusclaw/static/**/*
+alwaysApply: false
+---
+
+# 产品设计规范
+
+- 用户只有教师与学生两类；教师可上传本班资料，学生只能查看、检索与提问本班资料。
+- 每个数据视图提供加载中、正常、空状态与错误四种状态。无检索命中时显示“资料中未找到相关内容”。
+- 统一术语：资料（material）、切片（chunk）、出处（citation）、班级（class）、会话（session）。
+- 前端隐藏教师入口不是授权；服务端必须独立校验角色和班级。
+- 用户内容通过 `textContent` 写入 DOM，禁止 `innerHTML` 注入资料、问题或模型回答。
+- 表单提交期间禁用重复操作；服务端对写请求仍执行独立校验。
+
+检查：学生账号打开上传入口不能成功提交；检索无命中有明确空状态；页面源码不出现
+`innerHTML` 接收外部内容的写法。
