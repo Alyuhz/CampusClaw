@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import hashlib
+import json
+import secrets
 import sqlite3
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
 from flask import Flask, current_app, g
 from werkzeug.security import generate_password_hash
+
+from .http import ApiError
 
 MIGRATIONS_DIR = Path(__file__).with_name("migrations")
 
@@ -59,29 +64,33 @@ def _seed_users(connection: sqlite3.Connection, app: Flask) -> None:
 
 
 def _apply_migrations(connection: sqlite3.Connection) -> None:
-    connection.execute(
-        """
-        CREATE TABLE IF NOT EXISTS schema_migrations (
-            version TEXT PRIMARY KEY,
-            applied_at TEXT NOT NULL
+    # Serialize both version discovery and DDL across gunicorn workers.
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        connection.execute(
+            "CREATE TABLE IF NOT EXISTS schema_migrations "
+            "(version TEXT PRIMARY KEY, applied_at TEXT NOT NULL)"
         )
-        """
-    )
-    applied = {
-        row[0] for row in connection.execute("SELECT version FROM schema_migrations").fetchall()
-    }
-    for migration in sorted(MIGRATIONS_DIR.glob("*.sql")):
-        if migration.name in applied:
-            continue
-        statement = migration.read_text(encoding="utf-8")
-        version = migration.name.replace("'", "''")
-        connection.executescript(
-            "BEGIN;\n"
-            f"{statement}\n"
-            "INSERT INTO schema_migrations(version, applied_at) "
-            f"VALUES ('{version}', '{utc_now()}');\n"
-            "COMMIT;"
-        )
+        applied = {row[0] for row in connection.execute("SELECT version FROM schema_migrations")}
+        for migration in sorted(MIGRATIONS_DIR.glob("*.sql")):
+            if migration.name in applied:
+                continue
+            statement = ""
+            for line in migration.read_text(encoding="utf-8").splitlines(keepends=True):
+                statement += line
+                if sqlite3.complete_statement(statement):
+                    connection.execute(statement)
+                    statement = ""
+            if statement.strip():
+                raise ValueError(f"Incomplete migration: {migration.name}")
+            connection.execute(
+                "INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)",
+                (migration.name, utc_now()),
+            )
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
 
 
 def init_db(app: Flask) -> None:
@@ -170,8 +179,27 @@ def create_material(
     filename: str,
     created_by: int,
     chunks: list[dict[str, Any]],
+    session_id: str | None = None,
+    event_id: str | None = None,
 ) -> int:
     connection = get_db()
+    connection.execute("BEGIN IMMEDIATE")
+    actor = get_active_session(session_id) if session_id else None
+    status = 401 if actor is None else (403 if actor["role"] != "teacher" else 0)
+    if not status and (actor["class_id"] != class_id or actor["id"] != created_by):
+        status = 404
+    if status:
+        connection.rollback()
+        record_operation(
+            event_id or secrets.token_hex(16), actor, "materials.upload", "material", status
+        )
+        raise ApiError(
+            code=1100 if status == 401 else (1304 if status == 404 else 1204),
+            message="未登录"
+            if status == 401
+            else ("资源不存在" if status == 404 else "无权执行此操作"),
+            status=status,
+        )
     created_at = utc_now()
     try:
         cursor = connection.execute(
@@ -203,6 +231,14 @@ def create_material(
                 "INSERT INTO chunks_fts(rowid, content) VALUES (?, ?)",
                 (cursor.lastrowid, chunk["content"]),
             )
+        record_operation(
+            event_id or secrets.token_hex(16),
+            actor,
+            "materials.upload",
+            f"material:{material_id}",
+            201,
+            commit=False,
+        )
         connection.commit()
         return material_id
     except Exception:
@@ -283,3 +319,118 @@ def search_chunks_by_like(class_id: str, terms: list[str], limit: int) -> list[s
         )
         .fetchall()
     )
+
+
+def issue_csrf(jti: str, binding: str) -> str:
+    token = secrets.token_urlsafe(32)
+    get_db().execute(
+        "INSERT INTO csrf_tokens(token_hash,jti,binding_hash,expires_at) VALUES(?,?,?,?)",
+        (
+            hashlib.sha256(token.encode()).hexdigest(),
+            jti,
+            hashlib.sha256(binding.encode()).hexdigest(),
+            (datetime.now(UTC) + timedelta(minutes=10)).isoformat(),
+        ),
+    )
+    get_db().commit()
+    return token
+
+
+def consume_csrf(jti: str, binding: str, token: str) -> bool:
+    cursor = get_db().execute(
+        "UPDATE csrf_tokens SET used_at=? WHERE token_hash=? AND jti=? "
+        "AND binding_hash=? AND expires_at>? AND used_at IS NULL",
+        (
+            utc_now(),
+            hashlib.sha256(token.encode()).hexdigest(),
+            jti,
+            hashlib.sha256(binding.encode()).hexdigest(),
+            utc_now(),
+        ),
+    )
+    get_db().commit()
+    return cursor.rowcount == 1
+
+
+def record_operation(
+    event_id: str,
+    actor: Any,
+    operation: str,
+    obj: str,
+    status: int,
+    duration_ms: float = 0,
+    usage: Any = None,
+    *,
+    commit: bool = True,
+) -> None:
+    # Values are deliberately restricted to identifiers; no headers or request bodies.
+    payload = {
+        "actor": {"id": actor["id"], "username": actor["username"]} if actor else None,
+        "timestamp": utc_now(),
+        "operation": operation[:120],
+        "object": obj[:512],
+        "result": status,
+        "skill_id": None,
+        "skill_reason": "not_applicable",
+        "usage_and_duration": {"usage": usage, "duration_ms": duration_ms},
+        "event_id": event_id,
+    }
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+    if len(encoded.encode()) > 8192:
+        raise ValueError("Audit event too large")
+    get_db().execute(
+        "INSERT INTO operation_logs(event_id,class_id,actor_id,created_at,payload) "
+        "VALUES(?,?,?,?,?) ON CONFLICT(event_id) DO NOTHING",
+        (
+            event_id,
+            actor["class_id"] if actor else "",
+            actor["id"] if actor else None,
+            utc_now(),
+            encoded,
+        ),
+    )
+    if commit:
+        get_db().commit()
+
+
+def finish_operation(
+    event_id: str,
+    actor: Any,
+    operation: str,
+    status: int,
+    duration_ms: float,
+    usage: Any = None,
+    object_id: int | None = None,
+) -> None:
+    row = (
+        get_db()
+        .execute("SELECT payload FROM operation_logs WHERE event_id=?", (event_id,))
+        .fetchone()
+    )
+    if row:
+        payload = json.loads(row["payload"])
+        payload["usage_and_duration"] = {"usage": usage, "duration_ms": duration_ms}
+        get_db().execute(
+            "UPDATE operation_logs SET payload=? WHERE event_id=?",
+            (json.dumps(payload, ensure_ascii=False, separators=(",", ":")), event_id),
+        )
+        get_db().commit()
+    else:
+        obj = f"material:{object_id}" if isinstance(object_id, int) else operation
+        record_operation(event_id, actor, operation, obj, status, duration_ms, usage)
+
+
+def query_operations(
+    class_id: str, actor_id: int | None, start: str, end: str, limit: int, offset: int
+) -> list[dict]:
+    rows = (
+        get_db()
+        .execute(
+            "SELECT payload FROM operation_logs WHERE class_id=? AND (? IS NULL OR actor_id=?) "
+            "AND created_at>=? AND created_at<=? "
+            "ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?",
+            (class_id, actor_id, actor_id, start, end, limit, offset),
+        )
+        .fetchall()
+    )
+    return [json.loads(row["payload"]) for row in rows]

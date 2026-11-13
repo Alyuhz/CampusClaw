@@ -108,6 +108,8 @@ def upload() -> tuple:
         filename=safe_filename,
         created_by=int(g.user["id"]),
         chunks=chunks,
+        session_id=g.token_id,
+        event_id=getattr(g, "event_id", None),
     )
     return api_response({"id": material_id, "chunks": len(chunks)}, status=201)
 
