@@ -68,3 +68,7 @@ True
 
 [正式结果与来源](lesson10/bench/results.json)、[隔离profile](lesson10/search-profile.json)、[实测源码快照](lesson10/measured-source.zip)、[分析](lesson10/bench/analysis.json)、[环境](lesson10/bench/environment.json)、[脚本/参数/数据摘要](lesson10/bench/manifest.json)。
 本地未提交版本用基线与工作区摘要定位，没有伪造改进提交号。实测业务包、主脚本与锁文件逐文件哈希匹配归档；HTTP辅助模块由同一实验进程一次导入并用于前后两轮，其原始摘要在manifest，当前辅助文件已更新，不冒充原始文件快照。随后仅补就绪依赖表检查、指标无效凭据处理与非零seed参数的实际作用，默认seed=0的业务负载保持不变。复跑原主脚本可从快照提取；最终门禁另验最终源码。
+
+## 本地提交补记
+
+2026-11-13：缓存改进的实际实现提交为`44a83af6439e8e1de9436be7f4197b921f2ca264`。原实验的工作区摘要与先红后绿输出保持原样；没有将隔离副本的故意坏断言编造为项目提交。SEC分项编号见[提交索引](submission-commits.md)。提交后的双门禁再次通过，见[真实核验](submission/committed-verification.json)。

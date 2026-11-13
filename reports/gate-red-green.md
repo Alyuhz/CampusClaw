@@ -24,3 +24,7 @@
 四件证据：[坏断言diff](lesson10/gate/mutation.diff)、[红屏](lesson10/gate/red.txt)、[红绿退出码和版本](lesson10/gate/result.json)、[绿屏](lesson10/gate/green.txt)。红退出2，恢复后绿0。该脚本可复跑。
 
 本地没有创建修复提交；版本用基线完整SHA与源文件摘要定位，真实修复提交编号待维护者提交后补齐，不能冒充提交证据。本课保留上方第九课记录，最终门禁见 [本课核验](lesson10/final-verification.json)。
+
+## 本地提交补记
+
+2026-11-13：第十课修复与恢复后代码的实际交付提交为`44a83af6439e8e1de9436be7f4197b921f2ca264`。原实验的工作区摘要与先红后绿输出保持原样；没有将隔离副本的故意坏断言编造为项目提交。SEC分项编号见[提交索引](submission-commits.md)。提交后的双门禁再次通过，见[真实核验](submission/committed-verification.json)。

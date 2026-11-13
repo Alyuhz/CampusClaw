@@ -38,3 +38,7 @@
 | 知识库跨班为空 | test_sec02_both_search_paths、原检索隔离用例 | 基线已通过 |
 
 方案1保留SQLite与同步上传/检索/问答，不引入空置MySQL/Qdrant或伪造队列指标。
+
+## 本地提交后的最新门禁
+
+实际提交`44a83af6439e8e1de9436be7f4197b921f2ca264`：make check于2026-11-13T04:37:34.787053+00:00退出0（85通过），make check-security于2026-11-13T04:37:54.816133+00:00退出0（32通过）。[命令、时间与源码](submission/committed-verification.json)。上表保留各专题实验时间。
