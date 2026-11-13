@@ -130,3 +130,35 @@ def me() -> tuple:
 def logout() -> tuple:
     revoke_session(g.token_id)
     return api_response({"revoked": True})
+
+
+@bp.get("/audit-logs")
+@auth_required("teacher")
+def audit_logs() -> tuple:
+    from .db import query_operations
+
+    allowed = {"actor_id", "start", "end", "limit", "offset"}
+    if set(request.args) - allowed:
+        raise ApiError(code=1101, message="非法筛选", status=400)
+    try:
+        actor_id = int(request.args["actor_id"]) if "actor_id" in request.args else None
+        limit, offset = int(request.args.get("limit", "50")), int(request.args.get("offset", "0"))
+        start, end = request.args.get("start", "0000"), request.args.get("end", "9999")
+        if not 1 <= limit <= 100 or offset < 0 or (actor_id is not None and actor_id < 1):
+            raise ValueError()
+        for key in ("start", "end"):
+            if key in request.args:
+                value = datetime.fromisoformat(request.args[key])
+                if value.tzinfo is None:
+                    raise ValueError()
+                if key == "start":
+                    start = value.astimezone(UTC).replace(microsecond=0).isoformat()
+                else:
+                    end = value.astimezone(UTC).replace(microsecond=0).isoformat()
+        if start > end:
+            raise ValueError()
+    except ValueError as error:
+        raise ApiError(code=1101, message="非法筛选", status=400) from error
+    return api_response(
+        {"items": query_operations(g.user["class_id"], actor_id, start, end, limit, offset)}
+    )

@@ -61,6 +61,7 @@ def register_http(app: Flask) -> None:
         else:
             g.request_id = uuid.uuid4().hex
         g.started_at = time.monotonic()
+        g.event_id = uuid.uuid4().hex
 
     @app.after_request
     def finish_request(response: Response) -> Response:
@@ -78,6 +79,24 @@ def register_http(app: Flask) -> None:
                 "duration_ms": duration_ms,
             },
         )
+        if request.path.startswith("/api/v1/"):
+            from .db import finish_operation
+
+            try:
+                finish_operation(
+                    g.event_id,
+                    getattr(g, "user", None),
+                    request.endpoint or "unknown",
+                    response.status_code,
+                    duration_ms,
+                    getattr(g, "model_usage", None),
+                    object_id=(request.view_args or {}).get("material_id"),
+                )
+            except Exception:
+                app.logger.error("audit storage unavailable")
+                response = jsonify({"code": 1500, "message": "审计存储不可用", "data": None})
+                response.status_code = 503
+                response.headers["X-Request-ID"] = request_id
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
         return response
