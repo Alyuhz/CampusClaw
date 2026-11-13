@@ -1,0 +1,26 @@
+{
+  "prom/prometheus:v3.16.0": {
+    "image_id": "sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06",
+    "repository_digests": [
+      "prom/prometheus@sha256:e04987641b57704f408e31f6373ba4138ecf27cb4a165d24aabb6c38fddd0f06"
+    ]
+  },
+  "prom/alertmanager:v0.35.0": {
+    "image_id": "sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c",
+    "repository_digests": [
+      "prom/alertmanager@sha256:e638797febd034838eca8b98cdbd46f951e9bf7f178777aa8669167406a9946c"
+    ]
+  },
+  "grafana/grafana:13.3.1": {
+    "image_id": "sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf",
+    "repository_digests": [
+      "grafana/grafana@sha256:0615ec4fbd4072004b7d86b46ded63013a74b7d6eb1119273dd89e8fa25c13cf"
+    ]
+  },
+  "python:3.12-slim": {
+    "image_id": "sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b",
+    "repository_digests": [
+      "python@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b"
+    ]
+  }
+}

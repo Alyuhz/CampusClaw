@@ -1,13 +1,58 @@
 services:
   app:
-    build: .
-    env_file:
-      - .env
-    ports:
-      - "${WEB_PORT:-5000}:8000"
-    volumes:
-      - campusclaw-data:/app/instance
+    image: campusclaw:${IMAGE_TAG:-lesson10-local}
+    build:
+      context: .
+      args:
+        SOURCE_REVISION: ${SOURCE_REVISION:-worktree}
+    env_file: [.env]
+    ports: ["${BIND_HOST:-127.0.0.1}:${WEB_PORT:-5000}:8000"]
+    volumes: ["campusclaw-data:/app/instance"]
     restart: unless-stopped
-
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/ready',timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      start_period: 10s
+      retries: 5
+  prometheus:
+    image: prom/prometheus:v3.16.0
+    profiles: [telemetry]
+    volumes: ["./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro", "./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro"]
+    secrets: [metrics_token]
+    ports: ["127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"]
+    depends_on:
+      app: {condition: service_healthy}
+  alertmanager:
+    image: prom/alertmanager:v0.35.0
+    profiles: [telemetry]
+    volumes: ["./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro"]
+    depends_on:
+      notify-sink: {condition: service_healthy}
+    ports: ["127.0.0.1:${ALERTMANAGER_PORT:-9093}:9093"]
+  grafana:
+    image: grafana/grafana:13.3.1
+    profiles: [telemetry]
+    entrypoint: ["/bin/sh", "-ec", "test -n \"$$GF_SECURITY_ADMIN_PASSWORD\" || exit 64; exec /run.sh"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes: ["./monitoring/grafana:/etc/grafana/provisioning:ro", "./monitoring/dashboards:/var/lib/grafana/dashboards:ro"]
+    ports: ["127.0.0.1:${GRAFANA_PORT:-3000}:3000"]
+    depends_on: [prometheus]
+  notify-sink:
+    image: python:3.12-slim
+    profiles: [telemetry]
+    command: ["python", "/receiver.py"]
+    volumes: ["./monitoring/receiver.py:/receiver.py:ro", "alert-evidence:/evidence"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health')"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
 volumes:
   campusclaw-data:
+  alert-evidence:
+secrets:
+  metrics_token:
+    environment: METRICS_TOKEN

@@ -27,6 +27,9 @@ def load_config(test_config: dict[str, Any] | None = None) -> dict[str, Any]:
         return _required(environ, environment_key)
 
     config: dict[str, Any] = {
+        "TELEMETRY_ENABLED": environ.get("TELEMETRY_ENABLED", "false").lower() == "true",
+        "METRICS_TOKEN": environ.get("METRICS_TOKEN", ""),
+        "SEARCH_CACHE_ENABLED": environ.get("SEARCH_CACHE_ENABLED", "false").lower() == "true",
         "COOKIE_SECURE": environ.get("COOKIE_SECURE", "true").lower() != "false",
         "SECRET_KEY": required("SECRET_KEY", "FLASK_SECRET_KEY"),
         "JWT_SECRET": required("JWT_SECRET", "JWT_SECRET_KEY"),
@@ -46,6 +49,9 @@ def load_config(test_config: dict[str, Any] | None = None) -> dict[str, Any]:
         config.update(supplied)
     if len(config["JWT_SECRET"].encode()) < 32:
         raise ConfigurationError("JWT_SECRET_KEY must contain at least 32 bytes")
+
+    if config["TELEMETRY_ENABLED"] and len(config["METRICS_TOKEN"].encode()) < 32:
+        raise ConfigurationError("METRICS_TOKEN must contain at least 32 bytes when enabled")
 
     database_path = Path(str(config["DATABASE_PATH"]))
     if not database_path.is_absolute():

@@ -1,0 +1,102 @@
+{
+  "id": 4396388228444160,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "targets": [
+        {
+          "expr": "sum by (capability) (rate(capability_requests_total[2m]))",
+          "legendFormat": "{{capability}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Calls by capability",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "targets": [
+        {
+          "expr": "sum by (capability) (rate(capability_requests_total{status=~\"4..|5..\"}[2m])) / sum by (capability) (rate(capability_requests_total[2m]))",
+          "legendFormat": "{{capability}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Error ratio by capability",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 3,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, capability) (rate(capability_duration_seconds_bucket[2m])))",
+          "legendFormat": "{{capability}}",
+          "refId": "A"
+        }
+      ],
+      "title": "P95 seconds",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 4,
+      "targets": [
+        {
+          "expr": "sum by (capability) (capability_inflight)",
+          "legendFormat": "{{capability}}",
+          "refId": "A"
+        }
+      ],
+      "title": "In-flight requests (not an async queue)",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "15s",
+  "schemaVersion": 41,
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "title": "CampusClaw capabilities",
+  "uid": "campusclaw",
+  "version": 1
+}

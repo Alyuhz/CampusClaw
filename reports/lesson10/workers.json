@@ -1,0 +1,16 @@
+{
+  "configured_workers": 2,
+  "parallel_clients": 4,
+  "baseline": {},
+  "after": {
+    "grounded-ask": 10,
+    "knowledge-search": 10,
+    "materials-upload": 10
+  },
+  "after_restart": {
+    "grounded-ask": 10,
+    "knowledge-search": 10,
+    "materials-upload": 10
+  },
+  "each_capability_increment": 10
+}

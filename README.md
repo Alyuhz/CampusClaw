@@ -20,8 +20,7 @@ CampusClaw 是一个基于 Flask 和 RAG（检索增强生成）技术开发的 
 - Pytest 接口/单元测试、Ruff、布局检查、密钥扫描和变更规约校验；
 - Dockerfile、Compose、健康检查、CI 与 Git 提交前钩子。
 
-本地验证机器未安装 Docker，因此容器构建和真实 GLM 调用仍需在具备相应环境与 Key 的机器上
-完成最终联调；其余代码、接口与门禁可在本机执行。
+2026-11-11 已完成本地容器构建、健康与非 root/镜像层检查；真实 GLM 调用仍需测试凭证。
 
 ## 一、核心功能
 
@@ -210,3 +209,70 @@ make check
 项目重点在于将课程资料管理、全文检索和大语言模型问答相结合，实现具有来源追溯能力和班级数据隔离机制的智能学习辅助系统。
 
 当前未选择开源许可证；对外发布或复用前需由项目组明确许可方式。
+
+
+## 第 9 课安全验证
+
+[交付索引与前后对照](docs/changes/2026-11-11-lesson09-security-red-to-green.md) 汇总实现、回归与外部待办。
+
+.env.example 只列键名空值；本地至少填写 APP_VERSION、DATABASE_PATH、FLASK_SECRET_KEY、JWT_SECRET_KEY（至少32字节）和两类种子口令。HTTP 开发另填 COOKIE_SECURE=false；HTTPS 生产默认 true。可选模型及数值配置空值使用已声明默认值。
+
+依赖安装后，浏览器测试优先使用本机 Google Chrome；其他位置可设 CHROME_EXECUTABLE。没有 Chrome 时执行 `python -m playwright install chromium` 安装 Playwright 官方浏览器。CI 安装 Chromium 及系统依赖。
+
+```bash
+make check
+make check-security
+```
+
+make check 已包含 apitest/cases/ 的 SQL、真实 DOM XSS 与跨站 CSRF 回归。make check-security 对当前工作树/本地可见 Git 历史做秘密格式扫描，并审计运行与开发锁文件；任何未登记漏洞、无效例外或审计不可达非零退出。漏洞例外格式见 reports/security-baseline.md，当前 security-exceptions.json 为空。
+
+认证写请求新增一次性 CSRF 令牌和绑定 Cookie；现有页面已适配，命令行客户端须保留 Cookie 并在每次写前取令牌，详见 docs/api.md。只读教师审计查询限定本班。
+
+具备 Docker 时可重跑镜像验证（临时随机配置与容器会自动清理）：
+
+```bash
+docker build -t campusclaw:lesson09-security .
+.venv/bin/python scripts/verify_image.py
+```
+
+第九课验证时工作区尚未提交；现已整理为本地提交，仍未推送，见[提交索引](reports/submission-commits.md)；真实模型实验与另一组员独立复核仍需外部条件，缺失的异步/评分/技能/向量功能未被计为课程通过。
+
+## 第十课交付与验证
+
+本课采用 SQLite/FTS5 与同步上传、检索、问答方案。原课堂异步四步与批改技能的差异见 [盘点](reports/commands.md)；完整结论与证据从 [report.md](report.md) 打开。
+
+前置条件：Docker Engine 与 Compose v2（支持 environment secrets），本机 Python 3.12 用于门禁及验证脚本，官方依赖见锁文件。浏览器测试使用本机 Chrome 或 Playwright 官方 Chromium。首次运行先按上文复制并填写 `.env`，其中 `DATABASE_PATH=instance/campusclaw.sqlite3`、本地 HTTP 的 `COOKIE_SECURE=false`；容器卷对应此数据库位置。随后一条命令构建并启动：
+
+```bash
+docker compose up --build -d --wait
+```
+
+`/health` 保留原健康合同，`/ready` 检查数据库必要表及迁移，故障返回503，容器据此接流量。应用以非root、双worker运行；最终镜像保留业务字节码与资源，不含业务 `.py`，第三方运行库可能含Python源码。配置、凭证和数据库不进镜像。数据在命名卷中，普通 `docker compose down` 保留，`down -v` 会删除。
+
+检索缓存默认关闭，填写 `SEARCH_CACHE_ENABLED=true` 启用256项/30秒缓存；键含班级与数据库版本，教师上传与版本递增同事务，其他worker下一请求读取新版本。
+
+可选观测：在 `.env` 配置 `TELEMETRY_ENABLED=true`、至少32字节的独立 `METRICS_TOKEN`、非空 `GRAFANA_ADMIN_PASSWORD`。执行：
+
+```bash
+docker compose --env-file .env --profile telemetry up --build -d --wait
+```
+
+Grafana `http://127.0.0.1:3000`，账号admin、口令取自配置；Prometheus为9090，Alertmanager为9093。全部默认绑定回环地址，端口冲突可设置 `WEB_PORT`、`GRAFANA_PORT`、`PROMETHEUS_PORT`、`ALERTMANAGER_PORT`。三个capability分别为materials-upload、knowledge-search、grounded-ask。面板三组为调用量、计数计算的错误率、P95与执行中请求。执行中请求lease不代表任务队列。告警接收器为本地实验渠道，外部通知需另行配置。
+
+```bash
+make check
+make check-security
+make image
+.venv/bin/python -m scripts.verify_delivery --alerts
+.venv/bin/python -m scripts.verify_workers
+.venv/bin/python -m scripts.verify_lease_crash
+.venv/bin/python -m scripts.verify_mobile
+.venv/bin/python -m scripts.bench
+.venv/bin/python -m scripts.analyze_bench
+```
+
+双门禁任一非零均失败。安全门禁会访问官方漏洞数据库，网络不可达也失败。容器验证脚本使用干净临时目录、随机配置与独立卷，完成后只清理自己的资源；移动脚本需本机Chrome。压测固定种子0，两班各200资料×20片段，2 worker×4线程，并发1/4/8/16/32，预热5秒、测量20秒、3次重复、缓存关/开共90组合，约40分钟，使用合成数据和本地模型替身；详细参数见 `python -m scripts.bench --help`。压测结果归档后请先备份再重跑，脚本会更新本课结果文件。
+
+`make image` 对未提交源码生成工作区摘要标签与 `reports/lesson10/build.json`，不能将脏工作区标成已有提交。CI依次运行同样的双门禁与构建，产物含来源元数据及镜像tar；实际远端运行编号、主干保护和真实提交对应关系仍待维护者执行。
+
+手机同源访问需部署可信HTTPS并配置窄范围网络入口；本地移动视口自动化不是实机证据。当前不开放跨域，不应通过宽泛CORS或关闭CSRF实现手机访问。

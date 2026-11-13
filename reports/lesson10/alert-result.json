@@ -1,0 +1,11 @@
+{
+  "started_epoch": 1794541813.049849,
+  "first_received_epoch": 1794541969.3885016,
+  "elapsed": 156.3386526107788,
+  "recovery_received_epoch": 1794542074.3962092,
+  "receiver": "local-test-webhook",
+  "condition_satisfied_epoch": 1794541969.379456,
+  "delivery_delay_seconds": 0.009045600891113281,
+  "dashboard": "http://127.0.0.1:57940/d/campusclaw/capabilities",
+  "external_owner_notified": false
+}

@@ -1,0 +1,71 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+____________________ test_sec04_direct_student_write_denied ____________________
+
+app = <Flask 'campusclaw.app'>
+
+    def test_sec04_direct_student_write_denied(app):
+        with app.app_context():
+            student = db.get_user_by_username('student-a')
+>           with pytest.raises(ApiError) as denied:
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+E           Failed: DID NOT RAISE <class 'campusclaw.http.ApiError'>
+
+tests/test_security.py:9: Failed
+_____________________ test_csrf_required_with_valid_bearer _____________________
+
+client = <FlaskClient <Flask 'campusclaw.app'>>
+login = <function login.<locals>.do_login at 0x10af61300>
+
+    def test_csrf_required_with_valid_bearer(client, login):
+        headers = login('teacher-a')
+        headers.pop('X-CSRF-Token', None)
+        response = client.post('/api/v1/auth/logout', headers=headers)
+>       assert response.status_code == 403
+E       assert 200 == 403
+E        +  where 200 = <WrapperTestResponse streamed [200 OK]>.status_code
+
+tests/test_security.py:20: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"ts":"2026-11-11T00:55:41.531613+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"5674016b9abc4f8893d49d55eb1b516d","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":44.49}
+{"ts":"2026-11-11T00:55:41.532380+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"e1ac11cdee144620905057207dff53c3","method":"POST","path":"/api/v1/auth/logout","status":200,"duration_ms":0.45}
+_________________ test_audit_teacher_query_and_student_denial __________________
+
+client = <FlaskClient <Flask 'campusclaw.app'>>
+login = <function login.<locals>.do_login at 0x10af63c40>
+
+    def test_audit_teacher_query_and_student_denial(client, login):
+        student = login('student-a')
+        assert client.post('/api/v1/materials', headers=student).status_code == 403
+        teacher = login('teacher-a')
+        response = client.get('/api/v1/audit-logs', headers=teacher)
+>       assert response.status_code == 200
+E       assert 404 == 200
+E        +  where 404 = <WrapperTestResponse streamed [404 NOT FOUND]>.status_code
+
+tests/test_security.py:28: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"ts":"2026-11-11T00:55:41.669518+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"9b0ed59726884ea7b2a9c12da2192182","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":44.85}
+{"ts":"2026-11-11T00:55:41.670001+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"57af07d3e46449aa8ff739d64e53901e","method":"POST","path":"/api/v1/materials","status":403,"duration_ms":0.21}
+{"ts":"2026-11-11T00:55:41.714724+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"f5c95f8a02f54c5aae20db8a08fd7c90","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":44.57}
+{"ts":"2026-11-11T00:55:41.714949+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"ef7db45622c541ec89428244201fb5b7","method":"GET","path":"/api/v1/audit-logs","status":404,"duration_ms":0.02}
+_______________________ test_new_api_defaults_to_denied ________________________
+
+app = <Flask 'campusclaw.app'>, client = <FlaskClient <Flask 'campusclaw.app'>>
+
+    def test_new_api_defaults_to_denied(app, client):
+        app.add_url_rule('/api/v1/new-protected', 'new_protected', lambda: {'ok': True})
+>       assert client.get('/api/v1/new-protected').status_code == 401
+E       AssertionError: assert 200 == 401
+E        +  where 200 = <WrapperTestResponse streamed [200 OK]>.status_code
+E        +    where <WrapperTestResponse streamed [200 OK]> = get('/api/v1/new-protected')
+E        +      where get = <FlaskClient <Flask 'campusclaw.app'>>.get
+
+tests/test_security.py:36: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"ts":"2026-11-11T00:55:41.807182+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"73b62da984544fc8af875330f1c26b46","method":"GET","path":"/api/v1/new-protected","status":200,"duration_ms":0.03}
+=========================== short test summary info ============================
+FAILED tests/test_security.py::test_sec04_direct_student_write_denied - Faile...
+FAILED tests/test_security.py::test_csrf_required_with_valid_bearer - assert ...
+FAILED tests/test_security.py::test_audit_teacher_query_and_student_denial - ...
+FAILED tests/test_security.py::test_new_api_defaults_to_denied - AssertionErr...

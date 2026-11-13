@@ -1,0 +1,36 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________ test_metric_nonascii_invalid_token_rejected __________________
+
+app = <Flask 'campusclaw.app'>, client = <FlaskClient <Flask 'campusclaw.app'>>
+
+    def test_metric_nonascii_invalid_token_rejected(app, client):
+        app.config.update(
+            TELEMETRY_ENABLED=True, METRICS_TOKEN="metrics-test-token-with-at-least-32-bytes"
+        )
+>       assert client.get("/internal/metrics", headers={"Authorization": "Bearer é"}).status_code == 401
+E       AssertionError: assert 500 == 401
+E        +  where 500 = <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]>.status_code
+E        +    where <WrapperTestResponse streamed [500 INTERNAL SERVER ERROR]> = get('/internal/metrics', headers={'Authorization': 'Bearer é'})
+E        +      where get = <FlaskClient <Flask 'campusclaw.app'>>.get
+
+tests/test_delivery.py:168: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"ts":"2026-11-13T04:03:10.456236+00:00","level":"error","module":"campusclaw.app","message":"unhandled error"}
+{"ts":"2026-11-13T04:03:10.462305+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"5ba869ea3c044c03a04ec58b81cc8378","method":"GET","path":"/internal/metrics","status":500,"duration_ms":6.09}
+------------------------------ Captured log call -------------------------------
+ERROR    campusclaw.app:http.py:129 unhandled error
+Traceback (most recent call last):
+  File "/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/.venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/.venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/campusclaw/telemetry.py", line 59, in metrics
+    if not hmac.compare_digest(supplied, "Bearer " + expected):
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: comparing strings with non-ASCII characters is not supported
+INFO     campusclaw.app:http.py:97 request
+=========================== short test summary info ============================
+FAILED tests/test_delivery.py::test_metric_nonascii_invalid_token_rejected - ...

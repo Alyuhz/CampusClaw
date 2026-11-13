@@ -1,0 +1,87 @@
+.venv/bin/python -m scripts.build_image
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.81kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 162B done
+#3 DONE 0.0s
+
+#4 [builder 1/7] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#4 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b done
+#4 DONE 0.0s
+
+#5 [stage-1 2/8] WORKDIR /app
+#5 CACHED
+
+#6 [internal] load build context
+#6 transferring context: 1.03kB done
+#6 DONE 0.0s
+
+#7 [builder 2/7] WORKDIR /build
+#7 CACHED
+
+#8 [builder 3/7] COPY requirements.lock .
+#8 CACHED
+
+#9 [builder 4/7] RUN pip wheel --wheel-dir /wheels -r requirements.lock
+#9 CACHED
+
+#10 [builder 5/7] COPY campusclaw ./campusclaw
+#10 CACHED
+
+#11 [stage-1 3/8] RUN useradd --create-home --uid 10001 campusclaw
+#11 DONE 0.1s
+
+#12 [builder 6/7] RUN python -c 'import hashlib,json,pathlib; p=pathlib.Path("campusclaw"); files={str(f):hashlib.sha256(f.read_bytes()).hexdigest() for f in sorted(p.rglob("*")) if f.is_file() and "__pycache__" not in f.parts and f.suffix!=".pyc"}; pathlib.Path("build-info.json").write_text(json.dumps({"source_revision":__import__("os").environ.get("SOURCE_REVISION","worktree"),"application_sha256":hashlib.sha256(json.dumps(files,sort_keys=True).encode()).hexdigest(),"files":files}))'
+#12 DONE 0.1s
+
+#13 [builder 7/7] RUN python -m compileall -b -q --invalidation-mode checked-hash campusclaw     && find campusclaw -type f -name '*.py' -delete     && find campusclaw -type d -name __pycache__ -exec rm -rf {} +
+#13 DONE 0.2s
+
+#14 [stage-1 4/8] COPY --from=builder /wheels /wheels
+#14 DONE 0.0s
+
+#15 [stage-1 5/8] RUN pip install --no-cache-dir --no-index --find-links=/wheels /wheels/* && rm -rf /wheels
+#15 0.557 Looking in links: /wheels
+#15 0.558 Processing /wheels/blinker-1.9.0-py3-none-any.whl
+#15 0.560 Processing /wheels/click-8.5.1-py3-none-any.whl
+#15 0.560 Processing /wheels/flask-3.1.3-py3-none-any.whl
+#15 0.561 Processing /wheels/gunicorn-23.0.0-py3-none-any.whl
+#15 0.562 Processing /wheels/itsdangerous-2.2.0-py3-none-any.whl
+#15 0.563 Processing /wheels/jinja2-3.1.6-py3-none-any.whl
+#15 0.563 Processing /wheels/markupsafe-3.0.4-cp312-cp312-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl
+#15 0.563 Processing /wheels/packaging-26.3-py3-none-any.whl
+#15 0.564 Processing /wheels/pyjwt-2.15.1-py3-none-any.whl
+#15 0.564 Processing /wheels/python_dotenv-1.2.4-py3-none-any.whl
+#15 0.565 Processing /wheels/werkzeug-3.1.9-py3-none-any.whl
+#15 0.573 Installing collected packages: python-dotenv, pyjwt, packaging, markupsafe, itsdangerous, click, blinker, werkzeug, jinja2, gunicorn, flask
+#15 0.795 Successfully installed blinker-1.9.0 click-8.5.1 flask-3.1.3 gunicorn-23.0.0 itsdangerous-2.2.0 jinja2-3.1.6 markupsafe-3.0.4 packaging-26.3 pyjwt-2.15.1 python-dotenv-1.2.4 werkzeug-3.1.9
+#15 0.795 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#15 DONE 0.8s
+
+#16 [stage-1 6/8] COPY --from=builder --chown=campusclaw:campusclaw /build/campusclaw ./campusclaw
+#16 DONE 0.0s
+
+#17 [stage-1 7/8] COPY --from=builder /build/build-info.json /app/build-info.json
+#17 DONE 0.0s
+
+#18 [stage-1 8/8] RUN mkdir -p /app/instance && chown campusclaw:campusclaw /app/instance
+#18 DONE 0.1s
+
+#19 exporting to image
+#19 exporting layers
+#19 exporting layers 0.2s done
+#19 exporting manifest sha256:6d70ec2819d452021f86b5d6007d8a1015d6e295d14ca0fa1963cec873baa296 done
+#19 exporting config sha256:cff28f3f00811421e50ba37acedd460da9c26a431bbb5a8c24e3e34a5baa522a done
+#19 exporting attestation manifest sha256:41392945860f536e2301dd8bebae7b5b999951c1eaff83dcec73a3ae27b3c082 done
+#19 exporting manifest list sha256:05b7747d3eca7db7b4b45527fcc5b20dcd0850efd905368586a0e78d4fe47c0e done
+#19 naming to docker.io/library/campusclaw:worktree-9da0452ae0b26208 done
+#19 unpacking to docker.io/library/campusclaw:worktree-9da0452ae0b26208 0.1s done
+#19 DONE 0.3s
+campusclaw:worktree-9da0452ae0b26208

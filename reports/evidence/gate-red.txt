@@ -1,0 +1,3 @@
+dependency-audit: ok; unhandled=0, exceptions=0
+secret-like token in synthetic-risk.txt
+make: *** [check-security] Error 1

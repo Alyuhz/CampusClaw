@@ -1,0 +1,8 @@
+{
+  "workers_killed": 2,
+  "live_after_35_seconds": 1,
+  "after_worker_crash": 0,
+  "clear_seconds_after_crash": 25.06294387500384,
+  "business_rows": 0,
+  "scope": "isolated temporary compose only"
+}

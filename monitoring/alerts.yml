@@ -1,0 +1,10 @@
+groups:
+  - name: capability-errors
+    rules:
+      - alert: CapabilityErrorRate
+        expr: (sum by (capability) (increase(capability_requests_total{status=~"4..|5.."}[2m])) / sum by (capability) (increase(capability_requests_total[2m])) > 0.01) and (sum by (capability) (increase(capability_requests_total[2m])) >= 20)
+        for: 2m
+        labels: {severity: warning}
+        annotations:
+          summary: "Capability error rate remains above 1%"
+          dashboard: "http://localhost:3000/d/campusclaw/capabilities"

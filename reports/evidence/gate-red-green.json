@@ -1,0 +1,24 @@
+[
+  {
+    "phase": "red",
+    "command": "make check-security SECURITY_ROOT=<isolated-fixture>",
+    "exit_code": 2,
+    "synthetic_fixture": true,
+    "business_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+    "fixture_commit": "06d6309a683f156433b6fe80d781070a4ae86750",
+    "worktree_snapshot_sha256": "0c07e9d4a9327d1e77b5345d5619ca176eec8dfbcb768cba88f9fb7817c0aa01",
+    "base_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+    "state": "uncommitted local worktree"
+  },
+  {
+    "phase": "green",
+    "command": "make check-security SECURITY_ROOT=<isolated-fixture>",
+    "exit_code": 0,
+    "synthetic_fixture": true,
+    "business_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+    "fixture_commit": "06d6309a683f156433b6fe80d781070a4ae86750",
+    "worktree_snapshot_sha256": "0c07e9d4a9327d1e77b5345d5619ca176eec8dfbcb768cba88f9fb7817c0aa01",
+    "base_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+    "state": "uncommitted local worktree"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "SEC-01",
+    "tree": "4f81cb58141cce9fe3775fb4418e792b7d43c9cc",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-01.txt"
+  },
+  {
+    "id": "SEC-02",
+    "tree": "6189ba3b20830b6ccba1a43db76e17b562b46b60",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-02.txt"
+  },
+  {
+    "id": "SEC-04",
+    "tree": "2c120348d0655a75ac6f8f85ff83f20915bc52a0",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-04.txt"
+  },
+  {
+    "id": "SEC-07",
+    "tree": "24473a99aba581dcadda6e3791c588d1e5783696",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-07.txt"
+  },
+  {
+    "id": "injection",
+    "tree": "a7e648028c1fecf1edc96c0fc16abb168e6600a5",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-injection.txt"
+  },
+  {
+    "id": "SEC-08",
+    "tree": "a8910b2adaf779a3e4f8e91d075c893be7f9ab74",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-08.txt"
+  },
+  {
+    "id": "SEC-05",
+    "tree": "2e47959a6cc58dad017887de377712c6b1d8f7ad",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-05.txt"
+  },
+  {
+    "id": "SEC-06",
+    "tree": "51bdda6bc071b7983de41fa4f27a99005a829c72",
+    "command": "make check",
+    "exit_code": 0,
+    "output": "reports/submission/campusclaw-split-SEC-06.txt"
+  }
+]

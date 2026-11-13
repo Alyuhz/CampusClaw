@@ -1,0 +1,27 @@
+.venv/bin/python -m ruff check .
+All checks passed!
+.venv/bin/python -m ruff format --check .
+44 files already formatted
+.venv/bin/python -m compileall -q campusclaw tests scripts apitest conftest.py
+.venv/bin/python -m pytest --junitxml=reports/lesson10/pytest.xml
+...........................................F............................ [ 84%]
+.............                                                            [100%]
+=================================== FAILURES ===================================
+__________________________ test_report_links_resolve ___________________________
+
+    def test_report_links_resolve():
+        for file in [ROOT / "report.md", ROOT / "reports/bench.md", ROOT / "reports/traceability.md"]:
+            for target in re.findall(r"\]\(([^)]+)\)", file.read_text()):
+                if "://" not in target and not target.startswith("#"):
+>                   assert (file.parent / target.split("#")[0]).exists(), target
+E                   AssertionError: lesson10/pytest.xml
+E                   assert False
+E                    +  where False = exists()
+E                    +    where exists = (PosixPath('/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/reports') / 'lesson10/pytest.xml').exists
+E                    +      where PosixPath('/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/reports') = PosixPath('/Users/xiaoyuxiao/sspku_xyx/互联网/xiaozuzuoye/CampusClaw/reports/traceability.md').parent
+
+tests/test_delivery_quality.py:131: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_delivery_quality.py::test_report_links_resolve - AssertionE...
+1 failed, 84 passed in 11.78s
+make: *** [test] Error 1

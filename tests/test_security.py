@@ -270,7 +270,7 @@ def test_security_backup_restore_and_repeat_migration(app, client, login, tmp_pa
     with restored_app.app_context():
         assert len(db.list_materials("class-a")) == 1
         assert db.get_db().execute("SELECT count(*) FROM operation_logs").fetchone()[0] == before
-        assert db.get_db().execute("SELECT count(*) FROM schema_migrations").fetchone()[0] == 2
+        assert db.get_db().execute("SELECT count(*) FROM schema_migrations").fetchone()[0] == 3
 
 
 def test_parallel_initial_migration_is_safe(app, tmp_path):
@@ -286,4 +286,4 @@ def test_parallel_initial_migration_is_safe(app, tmp_path):
             return db.get_db().execute("SELECT count(*) FROM schema_migrations").fetchone()[0]
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        assert list(executor.map(initialize, range(2))) == [2, 2]
+        assert list(executor.map(initialize, range(2))) == [3, 3]

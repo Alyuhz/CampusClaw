@@ -1,0 +1,46 @@
+......F................                                                  [100%]
+=================================== FAILURES ===================================
+__________________ test_search_and_ask_only_use_current_class __________________
+
+client = <FlaskClient <Flask 'campusclaw.app'>>
+login = <function login.<locals>.do_login at 0x10b0a0720>
+
+    def test_search_and_ask_only_use_current_class(client, login):
+        teacher_a = login("teacher-a")
+        student_a = login("student-a")
+        student_b = login("student-b")
+        upload_material(
+            client,
+            teacher_a,
+            "数据库事务",
+            "事务隔离级别决定并发事务之间的可见性。",
+        )
+    
+        own_results = client.get("/api/v1/search?q=事务隔离", headers=student_a)
+        other_results = client.get("/api/v1/search?q=事务隔离", headers=student_b)
+        answer = client.post(
+            "/api/v1/ask",
+            headers=student_a,
+            json={"question": "事务隔离"},
+        )
+    
+        assert own_results.status_code == 200
+        assert len(own_results.get_json()["data"]["items"]) == 1
+        assert other_results.get_json()["data"]["items"] == []
+>       assert answer.status_code == 200
+E       assert 403 == 200
+E        +  where 403 = <WrapperTestResponse streamed [403 FORBIDDEN]>.status_code
+
+tests/test_api.py:115: AssertionError
+----------------------------- Captured stdout call -----------------------------
+{"ts":"2026-11-11T00:57:23.904730+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"b787d7873c294b269b2ff878e403b6a3","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":44.65}
+{"ts":"2026-11-11T00:57:23.950583+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"ff1270012b1f4d008d235b3d2e00cd51","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":45.27}
+{"ts":"2026-11-11T00:57:23.996710+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"83e4a330148c4747834d129528e36d07","method":"POST","path":"/api/v1/auth/login","status":200,"duration_ms":45.41}
+{"ts":"2026-11-11T00:57:23.997688+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"c49cf0be6eb74547a29ddb3f8bdf94cf","method":"GET","path":"/api/v1/auth/csrf","status":200,"duration_ms":0.43}
+{"ts":"2026-11-11T00:57:23.999200+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"3cd05ed6506647c187bddb156d3e767e","method":"POST","path":"/api/v1/materials","status":201,"duration_ms":1.07}
+{"ts":"2026-11-11T00:57:24.000474+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"e9098703fe9c479a81b876d425fec03c","method":"GET","path":"/api/v1/search","status":200,"duration_ms":0.77}
+{"ts":"2026-11-11T00:57:24.001237+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"d2b74cfd2a90487e822a0537c6b3655b","method":"GET","path":"/api/v1/search","status":200,"duration_ms":0.32}
+{"ts":"2026-11-11T00:57:24.001807+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"191a0fcf426140cda1ccc792a93fb933","method":"POST","path":"/api/v1/ask","status":403,"duration_ms":0.17}
+=========================== short test summary info ============================
+FAILED tests/test_api.py::test_search_and_ask_only_use_current_class - assert...
+1 failed, 22 passed in 3.08s

@@ -114,6 +114,8 @@ def login() -> tuple:
         expires_at=expires.isoformat(),
         created_at=utc_now(),
     )
+    g.user = get_active_session(jti)
+    g.token_id = jti
     from .db import issue_csrf
 
     binding = secrets.token_urlsafe(32)

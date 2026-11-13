@@ -1,0 +1,190 @@
+{
+  "kind": "isolated search path cProfile, not HTTP capacity",
+  "calls_each": 100,
+  "top_functions": {
+    "cache-off": [
+      {
+        "function": "search.py:search",
+        "calls": 100,
+        "cumulative_seconds": 1.534251915,
+        "inline_seconds": 0.001198515
+      },
+      {
+        "function": "db.py:search_chunks_by_fts",
+        "calls": 100,
+        "cumulative_seconds": 1.5161008770000002,
+        "inline_seconds": 0.00021988200000000002
+      },
+      {
+        "function": "<method 'execute' of 'sqlite3.Connection' objects>",
+        "calls": 100,
+        "cumulative_seconds": 1.513129087,
+        "inline_seconds": 1.513129087
+      },
+      {
+        "function": "search.py:make_snippet",
+        "calls": 800,
+        "cumulative_seconds": 0.015478745,
+        "inline_seconds": 0.0019374470000000001
+      },
+      {
+        "function": "search.py:query_terms",
+        "calls": 900,
+        "cumulative_seconds": 0.006240505,
+        "inline_seconds": 0.0021222240000000002
+      },
+      {
+        "function": "search.py:<genexpr>",
+        "calls": 1600,
+        "cumulative_seconds": 0.0034891820000000004,
+        "inline_seconds": 0.0005928940000000001
+      },
+      {
+        "function": "<built-in method builtins.next>",
+        "calls": 800,
+        "cumulative_seconds": 0.00348384,
+        "inline_seconds": 0.00011046100000000001
+      },
+      {
+        "function": "<method 'split' of 'str' objects>",
+        "calls": 1700,
+        "cumulative_seconds": 0.002993795,
+        "inline_seconds": 0.002993795
+      },
+      {
+        "function": "<method 'lower' of 'str' objects>",
+        "calls": 3200,
+        "cumulative_seconds": 0.0026982200000000003,
+        "inline_seconds": 0.0026982200000000003
+      },
+      {
+        "function": "__init__.py:sub",
+        "calls": 3600,
+        "cumulative_seconds": 0.0024747980000000003,
+        "inline_seconds": 0.0008370150000000001
+      },
+      {
+        "function": "<method 'fetchall' of 'sqlite3.Cursor' objects>",
+        "calls": 100,
+        "cumulative_seconds": 0.002410834,
+        "inline_seconds": 0.002410834
+      },
+      {
+        "function": "<method 'join' of 'str' objects>",
+        "calls": 900,
+        "cumulative_seconds": 0.001281293,
+        "inline_seconds": 0.0010134620000000001
+      },
+      {
+        "function": "__init__.py:_compile",
+        "calls": 3600,
+        "cumulative_seconds": 0.001064594,
+        "inline_seconds": 0.0006736660000000001
+      },
+      {
+        "function": "<method 'extend' of 'list' objects>",
+        "calls": 1800,
+        "cumulative_seconds": 0.000881288,
+        "inline_seconds": 0.000522946
+      },
+      {
+        "function": "<method 'sub' of 're.Pattern' objects>",
+        "calls": 3600,
+        "cumulative_seconds": 0.000573189,
+        "inline_seconds": 0.000573189
+      }
+    ],
+    "cache-on": [
+      {
+        "function": "search.py:search",
+        "calls": 100,
+        "cumulative_seconds": 0.009305500000000001,
+        "inline_seconds": 0.000112807
+      },
+      {
+        "function": "search_cache.py:get",
+        "calls": 100,
+        "cumulative_seconds": 0.00835454,
+        "inline_seconds": 7.9115e-05
+      },
+      {
+        "function": "copy.py:deepcopy",
+        "calls": 13700,
+        "cumulative_seconds": 0.008238873,
+        "inline_seconds": 0.004228675
+      },
+      {
+        "function": "copy.py:_deepcopy_list",
+        "calls": 100,
+        "cumulative_seconds": 0.008131921,
+        "inline_seconds": 0.000135386
+      },
+      {
+        "function": "copy.py:_deepcopy_dict",
+        "calls": 800,
+        "cumulative_seconds": 0.007212883000000001,
+        "inline_seconds": 0.001279781
+      },
+      {
+        "function": "<method 'get' of 'dict' objects>",
+        "calls": 27500,
+        "cumulative_seconds": 0.00139579,
+        "inline_seconds": 0.00139579
+      },
+      {
+        "function": "db.py:class_revision",
+        "calls": 100,
+        "cumulative_seconds": 0.00066763,
+        "inline_seconds": 4.1184000000000004e-05
+      },
+      {
+        "function": "<built-in method builtins.id>",
+        "calls": 15600,
+        "cumulative_seconds": 0.000524058,
+        "inline_seconds": 0.000524058
+      },
+      {
+        "function": "<method 'execute' of 'sqlite3.Connection' objects>",
+        "calls": 100,
+        "cumulative_seconds": 0.000393782,
+        "inline_seconds": 0.000393782
+      },
+      {
+        "function": "copy.py:_deepcopy_atomic",
+        "calls": 12800,
+        "cumulative_seconds": 0.00037732900000000003,
+        "inline_seconds": 0.00037732900000000003
+      },
+      {
+        "function": "copy.py:_keep_alive",
+        "calls": 900,
+        "cumulative_seconds": 0.000256121,
+        "inline_seconds": 0.00017084
+      },
+      {
+        "function": "local.py:__get__",
+        "calls": 400,
+        "cumulative_seconds": 0.00022419100000000002,
+        "inline_seconds": 9.5938e-05
+      },
+      {
+        "function": "db.py:get_db",
+        "calls": 100,
+        "cumulative_seconds": 0.00015603600000000002,
+        "inline_seconds": 4.2032e-05
+      },
+      {
+        "function": "local.py:_get_current_object",
+        "calls": 400,
+        "cumulative_seconds": 9.0124e-05,
+        "inline_seconds": 6.4193e-05
+      },
+      {
+        "function": "<method 'append' of 'list' objects>",
+        "calls": 1600,
+        "cumulative_seconds": 8.3794e-05,
+        "inline_seconds": 8.3794e-05
+      }
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+.venv/bin/python -m ruff check .
+All checks passed!
+.venv/bin/python -m ruff format --check .
+24 files already formatted
+.venv/bin/python -m compileall -q campusclaw tests scripts apitest conftest.py
+.venv/bin/python -m pytest
+...................................................                      [100%]
+51 passed in 9.61s
+.venv/bin/python scripts/check_layout.py
+layout: ok
+.venv/bin/python scripts/secret_scan.py
+secret-scan: ok
+.venv/bin/python scripts/validate_change.py
+spec-check: ok (1 archived change)

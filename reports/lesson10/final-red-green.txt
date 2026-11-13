@@ -1,0 +1,1 @@
+Deliberately broken assertion blocked; restored same command is green.

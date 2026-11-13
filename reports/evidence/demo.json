@@ -1,0 +1,14 @@
+{
+  "login": 200,
+  "submit_material": 201,
+  "own_search_count": 1,
+  "own_answer": 200,
+  "cross_class": 404,
+  "missing": 404,
+  "identical_404_bodies": true,
+  "asynchronous_202_state_chain": "not implemented in this project; not claimed green",
+  "model": "deterministic extractive; no live model request",
+  "worktree_snapshot_sha256": "0c07e9d4a9327d1e77b5345d5619ca176eec8dfbcb768cba88f9fb7817c0aa01",
+  "base_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+  "state": "uncommitted local worktree"
+}

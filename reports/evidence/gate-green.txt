@@ -1,0 +1,2 @@
+secret-scan: ok
+dependency-audit: ok; unhandled=0, exceptions=0

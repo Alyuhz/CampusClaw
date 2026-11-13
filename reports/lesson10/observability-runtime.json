@@ -1,0 +1,11 @@
+{
+  "prometheus": "http://127.0.0.1:57939",
+  "grafana": "http://127.0.0.1:57940",
+  "capabilities": [
+    "materials-upload",
+    "knowledge-search",
+    "grounded-ask"
+  ],
+  "real_local_alert": true,
+  "runtime_cleaned_after": true
+}

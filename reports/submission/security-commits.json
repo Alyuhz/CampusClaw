@@ -1,0 +1,50 @@
+[
+  {
+    "id": "SEC-01",
+    "commit": "a67ef80b3062daf9078c3d037e979c9b2efe2783",
+    "subject": "fix: SEC-01 default-deny protected API authentication",
+    "validated_tree": "4f81cb58141cce9fe3775fb4418e792b7d43c9cc"
+  },
+  {
+    "id": "SEC-02",
+    "commit": "55eeb559437732f473e958fd286b8cdc194df7c0",
+    "subject": "fix: SEC-02 enforce material class ownership",
+    "validated_tree": "6189ba3b20830b6ccba1a43db76e17b562b46b60"
+  },
+  {
+    "id": "SEC-04",
+    "commit": "3e11832ae4ad480ac8af6154ba7d9b43af4a2969",
+    "subject": "fix: SEC-04 authorize transactional writes by session role and ownership",
+    "validated_tree": "2c120348d0655a75ac6f8f85ff83f20915bc52a0"
+  },
+  {
+    "id": "SEC-07",
+    "commit": "2bc56ca30bb25ce56748c7ab4bccb68df5463030",
+    "subject": "fix: SEC-07 persist audit outcomes including denied requests",
+    "validated_tree": "24473a99aba581dcadda6e3791c588d1e5783696"
+  },
+  {
+    "id": "injection",
+    "commit": "140968ebb5bed68229012ee680e39fc021851d44",
+    "subject": "fix: add single-use CSRF and SQL XSS injection regressions",
+    "validated_tree": "a7e648028c1fecf1edc96c0fc16abb168e6600a5"
+  },
+  {
+    "id": "SEC-08",
+    "commit": "dbeeedb7cf954881af8333b700b1e8b987c5adc1",
+    "subject": "test: SEC-08 verify adversarial model tool authorization boundaries",
+    "validated_tree": "a8910b2adaf779a3e4f8e91d075c893be7f9ab74"
+  },
+  {
+    "id": "SEC-05",
+    "commit": "d9d603797de226bbc911f6a63237d92bfdd3d202",
+    "subject": "fix: SEC-05 scan secret history and verify credential-free image layers",
+    "validated_tree": "2e47959a6cc58dad017887de377712c6b1d8f7ad"
+  },
+  {
+    "id": "SEC-06",
+    "commit": "9ab8d3cd5a696ebeb23cc1a2e79fe88f54984c95",
+    "subject": "fix: SEC-06 upgrade vulnerable dependencies and enforce security audit gate",
+    "validated_tree": "51bdda6bc071b7983de41fa4f27a99005a829c72"
+  }
+]
