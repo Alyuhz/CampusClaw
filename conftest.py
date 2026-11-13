@@ -12,8 +12,9 @@ def app(tmp_path):
     application = create_app(
         {
             "TESTING": True,
+            "COOKIE_SECURE": False,
             "SECRET_KEY": "test-flask-secret",
-            "JWT_SECRET": "test-jwt-secret",
+            "JWT_SECRET": "test-jwt-secret-with-at-least-32-bytes",
             "DATABASE_PATH": tmp_path / "test.sqlite3",
             "APP_VERSION": "test",
             "SEED_TEACHER_PASSWORD": "teacher-pass",
@@ -45,6 +46,9 @@ def login(client) -> Callable[[str], dict[str, str]]:
         )
         assert response.status_code == 200
         token = response.get_json()["data"]["token"]
-        return {"Authorization": f"Bearer {token}"}
+        return {
+            "Authorization": f"Bearer {token}",
+            "X-CSRF-Token": response.get_json()["data"]["csrf_token"],
+        }
 
     return do_login

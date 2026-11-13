@@ -9,6 +9,12 @@ async function request(path, options = {}) {
     headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(options.body);
   }
+  if (state.token && ["POST", "PUT", "PATCH", "DELETE"].includes(options.method)) {
+    const csrfResponse = await fetch("/api/v1/auth/csrf", { headers: { Authorization: `Bearer ${state.token}` } });
+    const csrf = await csrfResponse.json();
+    if (!csrfResponse.ok) throw new Error(csrf.message);
+    headers["X-CSRF-Token"] = csrf.data.csrf_token;
+  }
   const response = await fetch(path, { ...options, headers });
   const payload = await response.json().catch(() => ({
     code: 1500,

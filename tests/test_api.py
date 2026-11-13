@@ -9,6 +9,9 @@ import campusclaw.assistant as assistant
 
 
 def upload_material(client, headers, title: str, content: str):
+    headers = dict(headers)
+    csrf = client.get("/api/v1/auth/csrf", headers=headers)
+    headers["X-CSRF-Token"] = csrf.get_json()["data"]["csrf_token"]
     return client.post(
         "/api/v1/materials",
         headers=headers,
@@ -100,6 +103,9 @@ def test_search_and_ask_only_use_current_class(client, login):
 
     own_results = client.get("/api/v1/search?q=事务隔离", headers=student_a)
     other_results = client.get("/api/v1/search?q=事务隔离", headers=student_b)
+    student_a["X-CSRF-Token"] = client.get("/api/v1/auth/csrf", headers=student_a).get_json()[
+        "data"
+    ]["csrf_token"]
     answer = client.post(
         "/api/v1/ask",
         headers=student_a,

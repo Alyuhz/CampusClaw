@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import secrets
 import uuid
 from collections.abc import Callable
 from datetime import UTC, datetime, timedelta
@@ -7,7 +8,7 @@ from functools import wraps
 from typing import Any, TypeVar
 
 import jwt
-from flask import Blueprint, current_app, g, request
+from flask import Blueprint, current_app, g, make_response, request
 from werkzeug.security import check_password_hash
 
 from .db import (
@@ -55,6 +56,18 @@ def protect_api() -> None:
     if not request.path.startswith("/api/v1/") or request.endpoint == "auth.login":
         return
     authenticate()
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        # Role rejection precedes CSRF so unauthorized writers remain observable as 403.
+        if request.endpoint == "materials.upload" and g.user["role"] != "teacher":
+            raise ApiError(code=1204, message="无权执行此操作", status=403)
+        from .db import consume_csrf
+
+        binding, token = (
+            request.cookies.get("csrf_binding", ""),
+            request.headers.get("X-CSRF-Token", ""),
+        )
+        if not binding or not token or not consume_csrf(g.token_id, binding, token):
+            raise ApiError(code=1204, message="CSRF 校验失败", status=403)
 
 
 def auth_required(*roles: str) -> Callable[[F], F]:
@@ -101,16 +114,42 @@ def login() -> tuple:
         expires_at=expires.isoformat(),
         created_at=utc_now(),
     )
-    return api_response(
-        {
-            "token": token,
-            "user": {
-                "username": user["username"],
-                "role": user["role"],
-                "class_id": user["class_id"],
-            },
-        }
+    from .db import issue_csrf
+
+    binding = secrets.token_urlsafe(32)
+    response = make_response(
+        api_response(
+            {
+                "csrf_token": issue_csrf(jti, binding),
+                "token": token,
+                "user": {
+                    "username": user["username"],
+                    "role": user["role"],
+                    "class_id": user["class_id"],
+                },
+            }
+        )
     )
+    response.set_cookie(
+        "csrf_binding",
+        binding,
+        httponly=True,
+        samesite="Strict",
+        secure=current_app.config["COOKIE_SECURE"],
+        max_age=int(current_app.config["TOKEN_TTL_SECONDS"]),
+    )
+    return response
+
+
+@bp.get("/auth/csrf")
+@auth_required()
+def csrf_token() -> tuple:
+    from .db import issue_csrf
+
+    binding = request.cookies.get("csrf_binding", "")
+    if not binding:
+        raise ApiError(code=1204, message="缺少浏览器绑定", status=403)
+    return api_response({"csrf_token": issue_csrf(g.token_id, binding)})
 
 
 @bp.get("/me")
