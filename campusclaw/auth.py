@@ -35,28 +35,35 @@ def _bearer_token() -> str:
     return token
 
 
+def authenticate() -> None:
+    if getattr(g, "user", None) is not None:
+        return
+    try:
+        payload = jwt.decode(
+            _bearer_token(), current_app.config["JWT_SECRET"], algorithms=["HS256"]
+        )
+    except jwt.PyJWTError as error:
+        raise ApiError(code=1100, message="未登录", status=401) from error
+    jti = payload.get("jti")
+    session = get_active_session(jti) if isinstance(jti, str) else None
+    if session is None:
+        raise ApiError(code=1100, message="未登录", status=401)
+    g.user, g.token_id = session, jti
+
+
+def protect_api() -> None:
+    if not request.path.startswith("/api/v1/") or request.endpoint == "auth.login":
+        return
+    authenticate()
+
+
 def auth_required(*roles: str) -> Callable[[F], F]:
     def decorator(view: F) -> F:
         @wraps(view)
         def wrapped(*args: Any, **kwargs: Any) -> Any:
-            try:
-                payload = jwt.decode(
-                    _bearer_token(),
-                    current_app.config["JWT_SECRET"],
-                    algorithms=["HS256"],
-                )
-            except jwt.PyJWTError as error:
-                raise ApiError(code=1100, message="未登录", status=401) from error
-            jti = payload.get("jti")
-            if not isinstance(jti, str):
-                raise ApiError(code=1100, message="未登录", status=401)
-            session = get_active_session(jti)
-            if session is None:
-                raise ApiError(code=1100, message="未登录", status=401)
-            if roles and session["role"] not in roles:
+            authenticate()
+            if roles and g.user["role"] not in roles:
                 raise ApiError(code=1204, message="无权执行此操作", status=403)
-            g.user = session
-            g.token_id = jti
             return view(*args, **kwargs)
 
         return wrapped  # type: ignore[return-value]
