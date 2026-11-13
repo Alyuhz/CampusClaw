@@ -5,7 +5,7 @@ description = "班级隔离的课程知识库与带出处问答助手"
 requires-python = ">=3.11"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "apitest/cases"]
 addopts = "-q"
 
 [tool.ruff]
