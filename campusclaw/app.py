@@ -21,6 +21,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
     app.teardown_appcontext(close_db)
     init_db(app)
     register_http(app)
+    app.before_request(auth.protect_api)
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(materials.bp)
