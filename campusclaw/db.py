@@ -211,18 +211,19 @@ def create_material(
 
 
 def get_material_for_class(material_id: int, class_id: str) -> sqlite3.Row | None:
-    return (
+    row = (
         get_db()
         .execute(
             """
-        SELECT id, title, filename, created_at
+        SELECT id, title, filename, created_at, class_id
         FROM materials
-        WHERE id = ? AND class_id = ?
+        WHERE id = ?
         """,
-            (material_id, class_id),
+            (material_id,),
         )
         .fetchone()
     )
+    return row if row is not None and row["class_id"] == class_id else None
 
 
 def list_chunks(material_id: int, class_id: str) -> list[sqlite3.Row]:
