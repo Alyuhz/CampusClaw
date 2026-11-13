@@ -1,0 +1,13 @@
+global:
+  resolve_timeout: 30s
+route:
+  receiver: local-evidence
+  group_by: [alertname, capability]
+  group_wait: 0s
+  group_interval: 15s
+  repeat_interval: 10m
+receivers:
+  - name: local-evidence
+    webhook_configs:
+      - url: http://notify-sink:8080/notify
+        send_resolved: true

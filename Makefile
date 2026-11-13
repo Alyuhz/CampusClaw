@@ -13,7 +13,7 @@ run:
 	$(PYTHON) -m flask --app 'campusclaw:create_app()' run --host 127.0.0.1 --port 5000
 
 test:
-	$(PYTHON) -m pytest
+	$(PYTHON) -m pytest --junitxml=reports/lesson10/pytest.xml
 
 lint:
 	$(PYTHON) -m ruff check .
@@ -35,10 +35,16 @@ check: lint compile test layout secret-scan spec-check
 
 # Security gate: every component must run; a failure cannot be hidden by another success.
 SECURITY_ROOT ?= .
+AUDIT_OUTPUT ?= reports/lesson10/dependencies-current.json
 dependency-audit:
-	$(PYTHON) scripts/dependency_audit.py --root "$(SECURITY_ROOT)" --output reports/evidence/dependencies-current.json
+	$(PYTHON) scripts/dependency_audit.py --root "$(SECURITY_ROOT)" --output "$(AUDIT_OUTPUT)"
 
 check-security:
 	@result=0; $(PYTHON) scripts/secret_scan.py --root "$(SECURITY_ROOT)" || result=1; \
-	$(PYTHON) scripts/dependency_audit.py --root "$(SECURITY_ROOT)" --output reports/evidence/dependencies-current.json || result=1; \
+	$(PYTHON) scripts/dependency_audit.py --root "$(SECURITY_ROOT)" --output "$(AUDIT_OUTPUT)" || result=1; \
+	$(PYTHON) -m pytest tests/test_security.py tests/test_security_gate.py tests/test_sec08.py apitest/cases --junitxml=reports/lesson10/security-pytest.xml || result=1; \
 	exit $$result
+
+.PHONY: image
+image:
+	$(PYTHON) -m scripts.build_image

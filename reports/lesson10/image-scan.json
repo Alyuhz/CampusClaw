@@ -1,0 +1,9 @@
+{
+  "image_id": "sha256:05b7747d3eca7db7b4b45527fcc5b20dcd0850efd905368586a0e78d4fe47c0e",
+  "layers_scanned": 11,
+  "bounded_files_scanned": 5011,
+  "business_files_seen": 18,
+  "business_py_files": 0,
+  "findings": [],
+  "scope": "All saved layers; regular files <=8MiB; known token/private-key formats. Dependency and stdlib source is not claimed absent."
+}

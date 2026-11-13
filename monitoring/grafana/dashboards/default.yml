@@ -1,0 +1,7 @@
+apiVersion: 1
+providers:
+  - name: CampusClaw
+    folder: CampusClaw
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

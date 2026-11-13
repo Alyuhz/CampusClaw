@@ -48,3 +48,11 @@ Flask、SQLite/SQLite FTS5 与 HTML/CSS/JavaScript。
   格式问题交给 Ruff。
 - 修改 `AGENTS.md`、`.cursor/`、`.githooks/`、`openspec/`、`Makefile`、`scripts/` 或
   `.github/` 必须说明原因、影响和验证方式，不得自行放宽门禁。
+
+
+## 第十课交付核查
+
+入口、业务逻辑、数据库、公共函数、错误处理、安全、性能七类检查使用 `.cursor/rules/review.mdc` 的逐类手段与判据。
+每条自动化适用场景需对应可收集用例，实际运行结果在 `reports/traceability.md` 可追溯；外部/人工项独立记录。
+观测和缓存不能放宽逐次鉴权、跨班隔离、审计原子性或既有门禁；指标不得带身份/班级/正文标签。
+验证：`make check`、`make check-security`、就绪故障/双worker缓存与指标回归，以及同参数压测的真实结果。

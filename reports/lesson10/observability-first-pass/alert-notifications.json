@@ -1,0 +1,40 @@
+[
+  {
+    "received_at": 1794541459.3912792,
+    "status": "firing",
+    "alerts": [
+      {
+        "status": "firing",
+        "labels": {
+          "alertname": "CapabilityErrorRate",
+          "capability": "materials-upload",
+          "severity": "warning"
+        },
+        "startsAt": "2026-11-13T03:44:19.379Z",
+        "endsAt": "0001-01-01T00:00:00Z",
+        "annotations": {
+          "dashboard": "http://localhost:3000/d/campusclaw/capabilities"
+        }
+      }
+    ]
+  },
+  {
+    "received_at": 1794541579.4066844,
+    "status": "resolved",
+    "alerts": [
+      {
+        "status": "resolved",
+        "labels": {
+          "alertname": "CapabilityErrorRate",
+          "capability": "materials-upload",
+          "severity": "warning"
+        },
+        "startsAt": "2026-11-13T03:44:19.379Z",
+        "endsAt": "2026-11-13T03:46:19.379Z",
+        "annotations": {
+          "dashboard": "http://localhost:3000/d/campusclaw/capabilities"
+        }
+      }
+    ]
+  }
+]

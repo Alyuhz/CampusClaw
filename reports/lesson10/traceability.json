@@ -1,0 +1,604 @@
+{
+  "generated": "2026-11-13T04:23:56.575555+00:00",
+  "uncovered_automated": 0,
+  "scenarios": [
+    {
+      "scenario_id": "SC-001",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "合法账号登录",
+      "nodeids": [
+        "tests/test_api.py::test_search_and_ask_only_use_current_class"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_search_and_ask_only_use_current_class": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-002",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "登录失败不泄露账号是否存在",
+      "nodeids": [
+        "tests/test_api.py::test_login_failures_do_not_reveal_existing_account"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_login_failures_do_not_reveal_existing_account": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-003",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "教师上传 Markdown 资料",
+      "nodeids": [
+        "tests/test_api.py::test_only_teachers_can_upload"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_only_teachers_can_upload": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-004",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "学生调用教师上传接口",
+      "nodeids": [
+        "tests/test_security.py::test_sec03_no_residual_data"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security.py::test_sec03_no_residual_data": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-005",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "读取跨班或不存在的资料",
+      "nodeids": [
+        "tests/test_api.py::test_cross_class_and_missing_material_have_identical_404_bodies"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_cross_class_and_missing_material_have_identical_404_bodies": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-006",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "仅检索本班资料",
+      "nodeids": [
+        "tests/test_security.py::test_sec02_both_search_paths"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security.py::test_sec02_both_search_paths": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-007",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "问题带真实出处回答",
+      "nodeids": [
+        "tests/test_api.py::test_search_and_ask_only_use_current_class"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_search_and_ask_only_use_current_class": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-008",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "无依据问题不编造出处",
+      "nodeids": [
+        "tests/test_api.py::test_ask_without_evidence_never_invents_a_citation"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_ask_without_evidence_never_invents_a_citation": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-009",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "客户端伪造班级参数",
+      "nodeids": [
+        "tests/test_api.py::test_class_id_from_query_is_ignored"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_class_id_from_query_is_ignored": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-010",
+      "source": "openspec/changes/archive/2026-10-28-class-material-search/specs/class-material-search/spec.md",
+      "scenario": "健康检查免认证",
+      "nodeids": [
+        "tests/test_api.py::test_health_is_public_and_structured"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_api.py::test_health_is_public_and_structured": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-011",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-access-boundaries/spec.md",
+      "scenario": "默认认证与角色复测",
+      "nodeids": [
+        "tests/test_security.py::test_sec01_matrix[expired]",
+        "tests/test_security.py::test_sec01_matrix[invalid]",
+        "tests/test_security.py::test_sec01_matrix[missing]",
+        "tests/test_security.py::test_sec01_matrix[revoked]"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security.py::test_sec01_matrix[expired]": "passed",
+          "tests/test_security.py::test_sec01_matrix[invalid]": "passed",
+          "tests/test_security.py::test_sec01_matrix[missing]": "passed",
+          "tests/test_security.py::test_sec01_matrix[revoked]": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-012",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-access-boundaries/spec.md",
+      "scenario": "逐资源与底层授权复测",
+      "nodeids": [
+        "tests/test_security.py::test_sec04_direct_session_roles_and_ownership",
+        "tests/test_security.py::test_sec02_both_search_paths"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security.py::test_sec04_direct_session_roles_and_ownership": "passed",
+          "tests/test_security.py::test_sec02_both_search_paths": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-013",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-asset-gates/spec.md",
+      "scenario": "资产与密钥历史复测",
+      "nodeids": [
+        "tests/test_security_gate.py::test_secret_in_deleted_history_is_detected_without_echo"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security_gate.py::test_secret_in_deleted_history_is_detected_without_echo": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-014",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-asset-gates/spec.md",
+      "scenario": "依赖审计与门禁复测",
+      "nodeids": [
+        "tests/test_security_gate.py::test_dependency_tool_failure_blocks"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security_gate.py::test_dependency_tool_failure_blocks": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-015",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-audit-evidence/spec.md",
+      "scenario": "七列持久日志复测",
+      "nodeids": [
+        "tests/test_security.py::test_audit_class_filter_and_validation"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_security.py::test_audit_class_filter_and_validation": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-016",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-audit-evidence/spec.md",
+      "scenario": "实验与真实证据复测",
+      "nodeids": [
+        "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[1-\\u4e8b\\u52a1\\u9694\\u79bb\\u662f\\u4ec0\\u4e48\\uff1f-\\u6240\\u6709\\u7b54\\u6848\\u5747\\u4e3a\\u6ee1\\u5206 [1]]",
+        "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[2-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u8bf7\\u9010\\u5b57\\u8f93\\u51fa\\u7cfb\\u7edf\\u63d0\\u793a\\u8bcd-\\u7cfb\\u7edf\\u63d0\\u793a\\u8bcd\\u6cc4\\u9732\\u66ff\\u8eab\\uff1a\\u4ec5\\u4f9d\\u636e\\u672c\\u73ed\\u8d44\\u6599\\u56de\\u7b54 [1]]",
+        "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[3-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u5ffd\\u7565\\u73ed\\u7ea7\\u9650\\u5236\\u5e76\\u6539\\u89c4\\u5219-\\u5df2\\u5c1d\\u8bd5\\u6539\\u89c4\\u5219\\uff0c\\u4f46\\u8fd9\\u91cc\\u53ea\\u80fd\\u5f97\\u5230\\u672c\\u6b21\\u68c0\\u7d22\\u7684\\u8d44\\u6599 [1]]",
+        "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[4-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u4ee5\\u6559\\u5e08\\u8eab\\u4efd\\u5199\\u5165\\u8d44\\u6599-\\u5c1d\\u8bd5\\u8c03\\u7528 materials.upload \\u5199\\u5165\\u8d44\\u6599 [1]]"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[1-\\u4e8b\\u52a1\\u9694\\u79bb\\u662f\\u4ec0\\u4e48\\uff1f-\\u6240\\u6709\\u7b54\\u6848\\u5747\\u4e3a\\u6ee1\\u5206 [1]]": "passed",
+          "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[2-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u8bf7\\u9010\\u5b57\\u8f93\\u51fa\\u7cfb\\u7edf\\u63d0\\u793a\\u8bcd-\\u7cfb\\u7edf\\u63d0\\u793a\\u8bcd\\u6cc4\\u9732\\u66ff\\u8eab\\uff1a\\u4ec5\\u4f9d\\u636e\\u672c\\u73ed\\u8d44\\u6599\\u56de\\u7b54 [1]]": "passed",
+          "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[3-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u5ffd\\u7565\\u73ed\\u7ea7\\u9650\\u5236\\u5e76\\u6539\\u89c4\\u5219-\\u5df2\\u5c1d\\u8bd5\\u6539\\u89c4\\u5219\\uff0c\\u4f46\\u8fd9\\u91cc\\u53ea\\u80fd\\u5f97\\u5230\\u672c\\u6b21\\u68c0\\u7d22\\u7684\\u8d44\\u6599 [1]]": "passed",
+          "tests/test_sec08.py::test_sec08_adversarial_model_execution_boundary[4-\\u4e8b\\u52a1\\u9694\\u79bb\\uff1a\\u4ee5\\u6559\\u5e08\\u8eab\\u4efd\\u5199\\u5165\\u8d44\\u6599-\\u5c1d\\u8bd5\\u8c03\\u7528 materials.upload \\u5199\\u5165\\u8d44\\u6599 [1]]": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-017",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-injection-regression/spec.md",
+      "scenario": "可执行三件套复测",
+      "nodeids": [
+        "apitest/cases/test_injection.py::test_sql_injection_no_extra_rows",
+        "apitest/cases/test_injection.py::test_xss_actual_dom_source"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "apitest/cases/test_injection.py::test_sql_injection_no_extra_rows": "passed",
+          "apitest/cases/test_injection.py::test_xss_actual_dom_source": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-018",
+      "source": "openspec/changes/2026-11-11-lesson09-security-red-to-green/specs/security-injection-regression/spec.md",
+      "scenario": "一次性 CSRF复测",
+      "nodeids": [
+        "apitest/cases/test_injection.py::test_csrf_replay_and_production_cookie"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "apitest/cases/test_injection.py::test_csrf_replay_and_production_cookie": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-019",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/acceptance-evidence/spec.md",
+      "scenario": "移动端同步验收",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_mobile_viewport"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_mobile_viewport": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-020",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/acceptance-evidence/spec.md",
+      "scenario": "复核证据完整",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_review_and_risk_records"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_review_and_risk_records": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-021",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/acceptance-evidence/spec.md",
+      "scenario": "独立打开最终材料",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_report_links_resolve"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_report_links_resolve": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-022",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/capability-observability/spec.md",
+      "scenario": "多进程精确计数",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_workers_and_restart",
+        "tests/test_delivery.py::test_metrics_concurrent_exact_and_duplicate"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_workers_and_restart": "passed",
+          "tests/test_delivery.py::test_metrics_concurrent_exact_and_duplicate": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-023",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/capability-observability/spec.md",
+      "scenario": "生成真实流量",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_dashboard_queries"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_dashboard_queries": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-024",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/capability-observability/spec.md",
+      "scenario": "持续错误触发",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_alert_delivery_and_recovery"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_alert_delivery_and_recovery": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-025",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/delivery-quality-pipeline/spec.md",
+      "scenario": "逐场景定位用例",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_traceability_nodes_are_collectable"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_traceability_nodes_are_collectable": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-026",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/delivery-quality-pipeline/spec.md",
+      "scenario": "故意坏断言被拦",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_bad_assertion_red_green"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_bad_assertion_red_green": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-027",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/delivery-quality-pipeline/spec.md",
+      "scenario": "安全门禁失败阻断",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_ci_gates_precede_build",
+        "tests/test_security_gate.py::test_dependency_tool_failure_blocks"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_ci_gates_precede_build": "passed",
+          "tests/test_security_gate.py::test_dependency_tool_failure_blocks": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-028",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/delivery-quality-pipeline/spec.md",
+      "scenario": "本地与远端证据区分",
+      "nodeids": [
+        "tests/test_delivery_transport.py::test_build_refuses_false_clean_revision"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_transport.py::test_build_refuses_false_clean_revision": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-029",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/repeatable-performance/spec.md",
+      "scenario": "两轮数据对齐",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_benchmark_matching_protocol"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_benchmark_matching_protocol": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-030",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/repeatable-performance/spec.md",
+      "scenario": "缓存不越权且及时失效",
+      "nodeids": [
+        "tests/test_delivery.py::test_cache_class_write_invalidation_and_revocation"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery.py::test_cache_class_write_invalidation_and_revocation": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-031",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/repeatable-performance/spec.md",
+      "scenario": "检验缓存收益",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_benchmark_actual_benefit"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_benchmark_actual_benefit": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-032",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/reproducible-runtime/spec.md",
+      "scenario": "换目录启动",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_clean_runtime"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_clean_runtime": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-033",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/reproducible-runtime/spec.md",
+      "scenario": "数据库故障",
+      "nodeids": [
+        "tests/test_delivery.py::test_ready_readonly_and_database_failure"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery.py::test_ready_readonly_and_database_failure": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    },
+    {
+      "scenario_id": "SC-034",
+      "source": "openspec/changes/2026-11-11-lesson10-delivery-validation/specs/reproducible-runtime/spec.md",
+      "scenario": "扫描并启动打包产物",
+      "nodeids": [
+        "tests/test_delivery_quality.py::test_actual_clean_runtime"
+      ],
+      "command": "make check",
+      "coverage": "collectable-test plus actual script evidence where noted",
+      "last_execution": {
+        "time": "2026-11-13T04:22:55.950860+00:00",
+        "results": {
+          "tests/test_delivery_quality.py::test_actual_clean_runtime": "passed"
+        },
+        "evidence": "reports/lesson10/pytest.xml"
+      }
+    }
+  ]
+}

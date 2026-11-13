@@ -1,0 +1,49 @@
+{
+  "kind": "automated-mobile-viewport",
+  "real_phone": false,
+  "viewport": [
+    390,
+    844
+  ],
+  "upload": 201,
+  "search": 200,
+  "ask": 200,
+  "cross": 404,
+  "identical_404": true,
+  "audited_denials": [
+    {
+      "actor": {
+        "id": 4,
+        "username": "student-b"
+      },
+      "event_id": "532d2bdce5d04d6d9538bed4cbb01d5f",
+      "object": "material:999999",
+      "operation": "materials.detail",
+      "result": 404,
+      "skill_id": null,
+      "skill_reason": "not_applicable",
+      "timestamp": "2026-11-13T03:46:00+00:00",
+      "usage_and_duration": {
+        "duration_ms": 0.31,
+        "usage": null
+      }
+    },
+    {
+      "actor": {
+        "id": 4,
+        "username": "student-b"
+      },
+      "event_id": "b9bab5694aa04c858ab1f82eeee23016",
+      "object": "material:1",
+      "operation": "materials.detail",
+      "result": 404,
+      "skill_id": null,
+      "skill_reason": "not_applicable",
+      "timestamp": "2026-11-13T03:46:00+00:00",
+      "usage_and_duration": {
+        "duration_ms": 0.36,
+        "usage": null
+      }
+    }
+  ]
+}

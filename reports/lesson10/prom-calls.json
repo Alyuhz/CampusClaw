@@ -1,0 +1,35 @@
+{
+  "status": "success",
+  "data": {
+    "resultType": "vector",
+    "result": [
+      {
+        "metric": {
+          "capability": "grounded-ask"
+        },
+        "value": [
+          1794541978.229,
+          "39"
+        ]
+      },
+      {
+        "metric": {
+          "capability": "knowledge-search"
+        },
+        "value": [
+          1794541978.229,
+          "58"
+        ]
+      },
+      {
+        "metric": {
+          "capability": "materials-upload"
+        },
+        "value": [
+          1794541978.229,
+          "163"
+        ]
+      }
+    ]
+  }
+}

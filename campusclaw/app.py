@@ -5,9 +5,9 @@ from typing import Any
 
 from flask import Flask, render_template
 
-from . import assistant, auth, materials, search
+from . import assistant, auth, materials, search, telemetry
 from .config import load_config
-from .db import close_db, database_is_ready, init_db
+from .db import close_db, database_is_ready, init_db, ready_for_traffic
 from .http import api_response, configure_logging, register_http
 
 
@@ -20,6 +20,7 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
 
     app.teardown_appcontext(close_db)
     init_db(app)
+    telemetry.register_metrics(app)
     register_http(app)
     app.before_request(auth.protect_api)
 
@@ -41,6 +42,11 @@ def create_app(test_config: dict[str, Any] | None = None) -> Flask:
             },
             status=status,
         )
+
+    @app.get("/ready")
+    def ready() -> tuple:
+        available = ready_for_traffic()
+        return api_response({"ready": available}, status=200 if available else 503)
 
     @app.get("/")
     def index() -> str:

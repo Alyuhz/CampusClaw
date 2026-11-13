@@ -3,11 +3,12 @@ from __future__ import annotations
 import re
 import sqlite3
 
-from flask import Blueprint, g, request
+from flask import Blueprint, current_app, g, request
 
 from .auth import auth_required
-from .db import search_chunks_by_fts, search_chunks_by_like
+from .db import class_revision, search_chunks_by_fts, search_chunks_by_like
 from .http import ApiError, api_response
+from .search_cache import SearchCache
 
 bp = Blueprint("search", __name__, url_prefix="/api/v1")
 
@@ -42,6 +43,14 @@ def make_snippet(content: str, query: str, radius: int = 90) -> str:
 
 
 def search(class_id: str, query: str, limit: int) -> list[dict[str, object]]:
+    cache = None
+    key = None
+    if current_app.config["SEARCH_CACHE_ENABLED"]:
+        cache = current_app.extensions.setdefault("search_cache", SearchCache())
+        key = (class_id, class_revision(class_id), query.strip(), limit)
+        hit = cache.get(key)
+        if hit is not None:
+            return hit
     terms = query_terms(query)
     fts_query = " OR ".join(f'"{term.replace(chr(34), chr(34) * 2)}"' for term in terms)
     try:
@@ -50,7 +59,7 @@ def search(class_id: str, query: str, limit: int) -> list[dict[str, object]]:
         rows = []
     if not rows:
         rows = search_chunks_by_like(class_id, terms[:12] or [query], limit)
-    return [
+    result = [
         {
             "chunk_id": row["id"],
             "material_id": row["material_id"],
@@ -63,6 +72,9 @@ def search(class_id: str, query: str, limit: int) -> list[dict[str, object]]:
         }
         for row in rows
     ]
+    if cache is not None:
+        cache.put(key, result)
+    return result
 
 
 @bp.get("/search")

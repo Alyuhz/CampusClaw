@@ -95,3 +95,27 @@
 | 1204 | 403/404 | 无权操作；资源型越权使用统一 404 |
 | 1304 | 404 | 资源不存在 |
 | 1500 | 500/503 | 系统错误或依赖不可达 |
+
+
+## 第九课安全接口更新
+
+受保护 /api/v1/ 默认在入口验证 Bearer，新增接口也不能漏检；公开登录、页面静态资源与 health 不变。状态变更请求除登录外增加一次性 CSRF 要求，这是客户端兼容性变更。
+
+登录成功返回 token、user、csrf_token，并设置 csrf_binding Cookie（HttpOnly、SameSite=Strict；默认 Secure）。本机 HTTP 开发须在 .env 明确 COOKIE_SECURE=false；生产 HTTPS 使用 true。
+
+`GET /api/v1/auth/csrf`：携带有效 Bearer 和浏览器绑定 Cookie，返回新 csrf_token。令牌存储仅摘要，绑定会话与 Cookie，10 分钟有效且只能用一次。写请求添加 X-CSRF-Token；即使业务参数失败，已消费的令牌也不可重放，重试前重新获取。Cookie 不是登录凭据，Bearer 仍必需。无身份 401；有效身份缺失/过期/重放/错绑定 CSRF 为 403/code=1204；学生教师写接口同样 403。
+
+命令行客户端使用 curl 的 -c/-b Cookie jar 保留绑定，再用当前 csrf_token 写入；不要将认证值保存到报告。前端已按每次写前取新令牌适配，不自动重放非幂等上传。上传是非幂等创建；退出重复使用已吊销会话为 401，不能重复提交兜底。
+
+`GET /api/v1/audit-logs`：仅教师可查本班。可选 actor_id（正整数）、start/end（带时区 ISO8601，归一 UTC）、limit（1..100，默认50）、offset（>=0，默认0）。未知筛选、非法数值或时间窗返回 400；学生返回 403；跨班记录不返回。排序 created_at DESC,id DESC。成功返回 data.items 的七列 JSON 事件，包含 event_id。
+
+事件字段：actor、timestamp、operation、object、result、skill_id、usage_and_duration；无技能协议时 skill_id=null 且 skill_reason=not_applicable。已知 token 用量按白名单记录，未知为 null。对象最长512字符、事件最多8192字节，不存秘密或正文。写业务与成功审计同事务；审计存储不可用返回 503/code=1500 并回滚上传。
+
+安全验证入口：make check（含 apitest/cases/ 的可执行三件套）、make check-security（秘密历史与两份锁文件依赖审计）。
+
+## 第十课交付与验证
+
+- `GET /ready`：免认证，只读检查必要数据表和迁移。就绪200，数据库不可达/必要结构缺失503，不调用模型、不创建业务数据。仅提供状态，不返回数据库细节。
+- `GET /internal/metrics`：仅 `TELEMETRY_ENABLED=true` 时启用，使用独立 `Authorization: Bearer <METRICS_TOKEN>`；业务JWT不适用，无效凭据401。关闭时404。计数及耗时直方图持久化，固定capability/status标签，不带身份、班级、问题、正文；存储故障不能伪装为零值。此接口供内部抓取，勿向公网开放。
+- `capability_requests_total`、`capability_duration_seconds`沿用审计操作结果；capability为materials-upload、knowledge-search、grounded-ask。`capability_inflight`为带30秒过期与续约的执行中lease，不是异步队列。
+- 当前上传成功201、检索/问答200；不提供202任务与轮询接口。手机视口复用相同认证、CSRF与同源API。

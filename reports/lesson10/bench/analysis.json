@@ -1,0 +1,98 @@
+{
+  "benefit_verified": true,
+  "search_comparisons": [
+    {
+      "concurrency": 1,
+      "before_throughput": 63.6,
+      "after_throughput": 822.95,
+      "before_p95_ms": 16.326624987414107,
+      "after_p95_ms": 1.4656250132247806,
+      "metric": "throughput",
+      "improvement_percent": 1193.9465408805033,
+      "consistent_repeats": 3,
+      "error_rate_increased": false
+    },
+    {
+      "concurrency": 4,
+      "before_throughput": 44.25,
+      "after_throughput": 653.35,
+      "before_p95_ms": 288.6929580126889,
+      "after_p95_ms": 15.863707987591624,
+      "metric": "throughput",
+      "improvement_percent": 1376.497175141243,
+      "consistent_repeats": 3,
+      "error_rate_increased": false
+    },
+    {
+      "concurrency": 8,
+      "before_throughput": 44.25,
+      "after_throughput": 556.9,
+      "before_p95_ms": 335.0116249930579,
+      "after_p95_ms": 45.795375015586615,
+      "metric": "throughput",
+      "improvement_percent": 1158.5310734463276,
+      "consistent_repeats": 3,
+      "error_rate_increased": false
+    },
+    {
+      "concurrency": 16,
+      "before_throughput": 44.35,
+      "after_throughput": 532.8,
+      "before_p95_ms": 532.2620420192834,
+      "after_p95_ms": 65.39820798207074,
+      "metric": "throughput",
+      "improvement_percent": 1101.3528748590754,
+      "consistent_repeats": 3,
+      "error_rate_increased": false
+    },
+    {
+      "concurrency": 32,
+      "before_throughput": 44.45,
+      "after_throughput": 494.45,
+      "before_p95_ms": 907.3237089905888,
+      "after_p95_ms": 148.21391698205844,
+      "metric": "throughput",
+      "improvement_percent": 1012.373453318335,
+      "consistent_repeats": 3,
+      "error_rate_increased": false
+    }
+  ],
+  "saturation": [
+    {
+      "variant": "before",
+      "endpoint": "submit",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    },
+    {
+      "variant": "before",
+      "endpoint": "query",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    },
+    {
+      "variant": "before",
+      "endpoint": "search",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    },
+    {
+      "variant": "after",
+      "endpoint": "submit",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    },
+    {
+      "variant": "after",
+      "endpoint": "query",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    },
+    {
+      "variant": "after",
+      "endpoint": "search",
+      "concurrency": 4,
+      "criterion": "adjacent throughput gain<10%"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "image_id": "sha256:be37a1949716d0da7c204c9d40b5ad380b8becc95baf0e5578f9d54e89532d06",
+  "user": "campusclaw",
+  "uid": "10001",
+  "health": {
+    "code": 0,
+    "data": {
+      "dependencies": {
+        "database": "ok"
+      },
+      "status": "ok",
+      "time": "2026-11-11T01:17:23+00:00",
+      "version": "lesson09"
+    },
+    "message": "ok"
+  },
+  "docker_server_version": "29.8.0",
+  "source_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+  "layers_scanned": 10,
+  "application_files_scanned": 24,
+  "application_secret_findings": [],
+  "text_files_scanned": 3509,
+  "total_regular_files": 5016,
+  "scope": "All saved runtime image layers: pattern scan on non-NUL files up to 8MiB; generated test-secret matching on readable files up to 8MiB. Binary/compressed artifacts are not claimed exhaustively inspected.",
+  "worktree_snapshot_sha256": "0c07e9d4a9327d1e77b5345d5619ca176eec8dfbcb768cba88f9fb7817c0aa01",
+  "base_commit": "e42b90293e1f3c0eb57dd26f127274801048e5e3",
+  "state": "uncommitted local worktree"
+}

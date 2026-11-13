@@ -1,0 +1,101 @@
+{
+  "uid": "campusclaw",
+  "title": "CampusClaw capabilities",
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "15s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Calls by capability",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (capability) (rate(capability_requests_total[2m]))",
+          "legendFormat": "{{capability}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Error ratio by capability",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (capability) (rate(capability_requests_total{status=~\"4..|5..\"}[2m])) / sum by (capability) (rate(capability_requests_total[2m]))",
+          "legendFormat": "{{capability}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "P95 seconds",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 9,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (le, capability) (rate(capability_duration_seconds_bucket[2m])))",
+          "legendFormat": "{{capability}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "In-flight requests (not an async queue)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 9,
+        "w": 12,
+        "h": 9
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (capability) (capability_inflight)",
+          "legendFormat": "{{capability}}"
+        }
+      ]
+    }
+  ]
+}

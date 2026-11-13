@@ -4,6 +4,7 @@ import hashlib
 import json
 import secrets
 import sqlite3
+import time
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -231,6 +232,11 @@ def create_material(
                 "INSERT INTO chunks_fts(rowid, content) VALUES (?, ?)",
                 (cursor.lastrowid, chunk["content"]),
             )
+        connection.execute(
+            "INSERT INTO class_revisions(class_id,revision) VALUES(?,1) "
+            "ON CONFLICT(class_id) DO UPDATE SET revision=revision+1",
+            (class_id,),
+        )
         record_operation(
             event_id or secrets.token_hex(16),
             actor,
@@ -402,22 +408,32 @@ def finish_operation(
     usage: Any = None,
     object_id: int | None = None,
 ) -> None:
-    row = (
-        get_db()
-        .execute("SELECT payload FROM operation_logs WHERE event_id=?", (event_id,))
-        .fetchone()
-    )
-    if row:
-        payload = json.loads(row["payload"])
-        payload["usage_and_duration"] = {"usage": usage, "duration_ms": duration_ms}
-        get_db().execute(
-            "UPDATE operation_logs SET payload=? WHERE event_id=?",
-            (json.dumps(payload, ensure_ascii=False, separators=(",", ":")), event_id),
-        )
-        get_db().commit()
-    else:
-        obj = f"material:{object_id}" if isinstance(object_id, int) else operation
-        record_operation(event_id, actor, operation, obj, status, duration_ms, usage)
+    connection = get_db()
+    connection.execute("BEGIN IMMEDIATE")
+    try:
+        row = connection.execute(
+            "SELECT payload FROM operation_logs WHERE event_id=?", (event_id,)
+        ).fetchone()
+        if row:
+            payload = json.loads(row["payload"])
+            payload["usage_and_duration"] = {"usage": usage, "duration_ms": duration_ms}
+            payload["result"] = status
+            connection.execute(
+                "UPDATE operation_logs SET payload=? WHERE event_id=?",
+                (json.dumps(payload, ensure_ascii=False, separators=(",", ":")), event_id),
+            )
+        else:
+            obj = f"material:{object_id}" if isinstance(object_id, int) else operation
+            record_operation(
+                event_id, actor, operation, obj, status, duration_ms, usage, commit=False
+            )
+        if current_app.config.get("TELEMETRY_ENABLED"):
+            _aggregate_metric(event_id, operation, status, duration_ms / 1000)
+            connection.execute("DELETE FROM request_leases WHERE event_id=?", (event_id,))
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
 
 
 def query_operations(
@@ -434,3 +450,109 @@ def query_operations(
         .fetchall()
     )
     return [json.loads(row["payload"]) for row in rows]
+
+
+CAPABILITIES = {
+    "materials.upload": "materials-upload",
+    "search.find": "knowledge-search",
+    "assistant.ask": "grounded-ask",
+}
+METRIC_BOUNDS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0)
+
+
+def class_revision(class_id: str) -> int:
+    row = (
+        get_db()
+        .execute("SELECT revision FROM class_revisions WHERE class_id=?", (class_id,))
+        .fetchone()
+    )
+    return row[0] if row else 0
+
+
+def ready_for_traffic() -> bool:
+    try:
+        applied = {row[0] for row in get_db().execute("SELECT version FROM schema_migrations")}
+        expected = {p.name for p in MIGRATIONS_DIR.glob("*.sql")}
+        for table in (
+            "users",
+            "auth_sessions",
+            "csrf_tokens",
+            "materials",
+            "chunks",
+            "chunks_fts",
+            "operation_logs",
+            "class_revisions",
+            "metric_totals",
+            "metric_receipts",
+            "request_leases",
+        ):
+            get_db().execute(f"SELECT 1 FROM {table} LIMIT 1").fetchone()
+        return expected <= applied
+    except (sqlite3.Error, OSError):
+        return False
+
+
+def _aggregate_metric(event_id: str, operation: str, status: int, seconds: float) -> None:
+    capability = CAPABILITIES.get(operation)
+    if capability is None:
+        return
+    cursor = get_db().execute(
+        "INSERT INTO metric_receipts(event_id) VALUES(?) ON CONFLICT DO NOTHING", (event_id,)
+    )
+    if not cursor.rowcount:
+        return
+    row = (
+        get_db()
+        .execute(
+            "SELECT n,sum_seconds,buckets FROM metric_totals WHERE capability=? AND status=?",
+            (capability, status),
+        )
+        .fetchone()
+    )
+    buckets = json.loads(row["buckets"]) if row else [0] * (len(METRIC_BOUNDS) + 1)
+    for index, bound in enumerate((*METRIC_BOUNDS, float("inf"))):
+        buckets[index] += int(seconds <= bound)
+    get_db().execute(
+        "INSERT INTO metric_totals(capability,status,n,sum_seconds,buckets) VALUES(?,?,?,?,?) "
+        "ON CONFLICT(capability,status) DO UPDATE SET n=excluded.n,"
+        "sum_seconds=excluded.sum_seconds,buckets=excluded.buckets",
+        (
+            capability,
+            status,
+            (row["n"] if row else 0) + 1,
+            (row["sum_seconds"] if row else 0) + seconds,
+            json.dumps(buckets),
+        ),
+    )
+
+
+def begin_lease(event_id: str, capability: str) -> None:
+    with get_db():
+        get_db().execute("DELETE FROM request_leases WHERE expires<?", (time.time(),))
+        get_db().execute(
+            "INSERT INTO request_leases(event_id,capability,expires) VALUES(?,?,?)",
+            (event_id, capability, time.time() + 30),
+        )
+
+
+def renew_leases(events: list[str]) -> None:
+    with get_db():
+        get_db().executemany(
+            "UPDATE request_leases SET expires=? WHERE event_id=?",
+            [(time.time() + 30, event) for event in events],
+        )
+
+
+def metric_snapshot() -> tuple[list[dict], dict[str, int]]:
+    totals = [
+        dict(row)
+        for row in get_db().execute("SELECT * FROM metric_totals ORDER BY capability,status")
+    ]
+    active = {
+        row["capability"]: row["n"]
+        for row in get_db().execute(
+            "SELECT capability,count(*) n FROM request_leases WHERE expires>? GROUP BY capability",
+            (time.time(),),
+        )
+    }
+    return totals, active

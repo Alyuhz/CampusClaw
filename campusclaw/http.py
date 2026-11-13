@@ -62,6 +62,12 @@ def register_http(app: Flask) -> None:
             g.request_id = uuid.uuid4().hex
         g.started_at = time.monotonic()
         g.event_id = uuid.uuid4().hex
+        if app.config["TELEMETRY_ENABLED"]:
+            from .db import CAPABILITIES
+
+            capability = CAPABILITIES.get(request.endpoint)
+            if capability:
+                app.extensions["leases"].add(g.event_id, capability)
 
     @app.after_request
     def finish_request(response: Response) -> Response:
@@ -69,16 +75,6 @@ def register_http(app: Flask) -> None:
         response.headers["X-Request-ID"] = request_id
         started_at = getattr(g, "started_at", time.monotonic())
         duration_ms = round((time.monotonic() - started_at) * 1000, 2)
-        app.logger.info(
-            "request",
-            extra={
-                "request_id": request_id,
-                "method": request.method,
-                "path": request.path,
-                "status": response.status_code,
-                "duration_ms": duration_ms,
-            },
-        )
         if request.path.startswith("/api/v1/"):
             from .db import finish_operation
 
@@ -97,6 +93,17 @@ def register_http(app: Flask) -> None:
                 response = jsonify({"code": 1500, "message": "审计存储不可用", "data": None})
                 response.status_code = 503
                 response.headers["X-Request-ID"] = request_id
+        app.extensions["leases"].discard(getattr(g, "event_id", ""))
+        app.logger.info(
+            "request",
+            extra={
+                "request_id": request_id,
+                "method": request.method,
+                "path": request.path,
+                "status": response.status_code,
+                "duration_ms": duration_ms,
+            },
+        )
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Cache-Control"] = "no-store"
         return response

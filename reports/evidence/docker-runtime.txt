@@ -1,0 +1,6 @@
+{"ts":"2026-11-11T01:17:23.025244+00:00","level":"info","module":"campusclaw.app","message":"request","request_id":"caa4e1e3d1f441aa80521e9bea092df9","method":"GET","path":"/health","status":200,"duration_ms":0.16}
+[2026-11-11 01:17:22 +0000] [1] [INFO] Starting gunicorn 23.0.0
+[2026-11-11 01:17:22 +0000] [1] [INFO] Listening at: http://0.0.0.0:8000 (1)
+[2026-11-11 01:17:22 +0000] [1] [INFO] Using worker: sync
+[2026-11-11 01:17:22 +0000] [7] [INFO] Booting worker with pid: 7
+[2026-11-11 01:17:22 +0000] [8] [INFO] Booting worker with pid: 8

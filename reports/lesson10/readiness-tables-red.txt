@@ -1,0 +1,98 @@
+FFFFF                                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_ready_rejects_missing_required_table[auth_sessions] ___________
+
+app = <Flask 'campusclaw.app'>, table = 'auth_sessions'
+
+    @pytest.mark.parametrize(
+        "table", ["auth_sessions", "csrf_tokens", "chunks_fts", "metric_receipts", "request_leases"]
+    )
+    def test_ready_rejects_missing_required_table(app, table):
+        with app.app_context():
+            connection = db.get_db()
+            connection.execute(f"DROP TABLE {table}")
+            connection.commit()
+>           assert not db.ready_for_traffic()
+E           assert not True
+E            +  where True = <function ready_for_traffic at 0x10ba4d300>()
+E            +    where <function ready_for_traffic at 0x10ba4d300> = db.ready_for_traffic
+
+tests/test_delivery.py:179: AssertionError
+____________ test_ready_rejects_missing_required_table[csrf_tokens] ____________
+
+app = <Flask 'campusclaw.app'>, table = 'csrf_tokens'
+
+    @pytest.mark.parametrize(
+        "table", ["auth_sessions", "csrf_tokens", "chunks_fts", "metric_receipts", "request_leases"]
+    )
+    def test_ready_rejects_missing_required_table(app, table):
+        with app.app_context():
+            connection = db.get_db()
+            connection.execute(f"DROP TABLE {table}")
+            connection.commit()
+>           assert not db.ready_for_traffic()
+E           assert not True
+E            +  where True = <function ready_for_traffic at 0x10ba4d300>()
+E            +    where <function ready_for_traffic at 0x10ba4d300> = db.ready_for_traffic
+
+tests/test_delivery.py:179: AssertionError
+____________ test_ready_rejects_missing_required_table[chunks_fts] _____________
+
+app = <Flask 'campusclaw.app'>, table = 'chunks_fts'
+
+    @pytest.mark.parametrize(
+        "table", ["auth_sessions", "csrf_tokens", "chunks_fts", "metric_receipts", "request_leases"]
+    )
+    def test_ready_rejects_missing_required_table(app, table):
+        with app.app_context():
+            connection = db.get_db()
+            connection.execute(f"DROP TABLE {table}")
+            connection.commit()
+>           assert not db.ready_for_traffic()
+E           assert not True
+E            +  where True = <function ready_for_traffic at 0x10ba4d300>()
+E            +    where <function ready_for_traffic at 0x10ba4d300> = db.ready_for_traffic
+
+tests/test_delivery.py:179: AssertionError
+__________ test_ready_rejects_missing_required_table[metric_receipts] __________
+
+app = <Flask 'campusclaw.app'>, table = 'metric_receipts'
+
+    @pytest.mark.parametrize(
+        "table", ["auth_sessions", "csrf_tokens", "chunks_fts", "metric_receipts", "request_leases"]
+    )
+    def test_ready_rejects_missing_required_table(app, table):
+        with app.app_context():
+            connection = db.get_db()
+            connection.execute(f"DROP TABLE {table}")
+            connection.commit()
+>           assert not db.ready_for_traffic()
+E           assert not True
+E            +  where True = <function ready_for_traffic at 0x10ba4d300>()
+E            +    where <function ready_for_traffic at 0x10ba4d300> = db.ready_for_traffic
+
+tests/test_delivery.py:179: AssertionError
+__________ test_ready_rejects_missing_required_table[request_leases] ___________
+
+app = <Flask 'campusclaw.app'>, table = 'request_leases'
+
+    @pytest.mark.parametrize(
+        "table", ["auth_sessions", "csrf_tokens", "chunks_fts", "metric_receipts", "request_leases"]
+    )
+    def test_ready_rejects_missing_required_table(app, table):
+        with app.app_context():
+            connection = db.get_db()
+            connection.execute(f"DROP TABLE {table}")
+            connection.commit()
+>           assert not db.ready_for_traffic()
+E           assert not True
+E            +  where True = <function ready_for_traffic at 0x10ba4d300>()
+E            +    where <function ready_for_traffic at 0x10ba4d300> = db.ready_for_traffic
+
+tests/test_delivery.py:179: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_delivery.py::test_ready_rejects_missing_required_table[auth_sessions]
+FAILED tests/test_delivery.py::test_ready_rejects_missing_required_table[csrf_tokens]
+FAILED tests/test_delivery.py::test_ready_rejects_missing_required_table[chunks_fts]
+FAILED tests/test_delivery.py::test_ready_rejects_missing_required_table[metric_receipts]
+FAILED tests/test_delivery.py::test_ready_rejects_missing_required_table[request_leases]
