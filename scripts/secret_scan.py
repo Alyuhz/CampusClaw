@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import re
 import subprocess
 import sys
@@ -58,6 +59,10 @@ def history_diff() -> str:
 
 
 def main() -> int:
+    global ROOT
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path, default=ROOT)
+    ROOT = parser.parse_args().root.resolve()
     findings: list[str] = []
     for path in tracked_files():
         if not path.is_file() or (
@@ -80,7 +85,10 @@ def main() -> int:
     for pattern in TOKEN_PATTERNS:
         if pattern.search(history):
             findings.append("secret-like token found in Git history")
-    for match in ENV_SECRET.finditer(history):
+    history_values = "\n".join(
+        line[1:] if line.startswith(("+", "-")) else line for line in history.splitlines()
+    )
+    for match in ENV_SECRET.finditer(history_values):
         if match.group(2).strip():
             findings.append(f"secret-like value in Git history: {match.group(1)}")
 
