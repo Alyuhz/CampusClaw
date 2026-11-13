@@ -24,3 +24,9 @@ SEC-03教师角色检查在基线已存在，本课补复测，不另称修复�
 交付实现提交：`44a83af6439e8e1de9436be7f4197b921f2ca264`。该提交包含检索缓存改进、就绪/指标修复、容器与CI配置、观测和交付证据。
 
 对该实际提交运行双门禁：[记录](submission/committed-verification.json)、[全量85通过](submission/check.txt)、[安全32通过](submission/security.txt)。本索引的后续文档提交只补真实编号和原始结果，不改业务代码。
+
+## 远端推送补记
+
+2026-11-13，SSH认证成功，已将开发分支codex/lesson09-security推送到Alyuhz/CampusClaw；远端逐字核对提交为`c016365f474b4afecd866ccc3d35aa5f12601a4d`。本节后续文档补记也随同分支上传，不合并main。前文“未推送”为此前状态。
+
+[实际推送与CI记录](submission/push-verification.json)：GitHub运行43367998192在任何步骤启动前失败，提示账号因账单问题被锁；不是测试断言失败，也不能计CI或镜像构建通过。需仓库所有者处理账号运行条件。外部验收7.4仍待CI构建与主干保护证据。

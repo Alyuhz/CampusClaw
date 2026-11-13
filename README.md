@@ -235,7 +235,7 @@ docker build -t campusclaw:lesson09-security .
 .venv/bin/python scripts/verify_image.py
 ```
 
-第九课验证时工作区尚未提交；现已整理为本地提交，仍未推送，见[提交索引](reports/submission-commits.md)；真实模型实验与另一组员独立复核仍需外部条件，缺失的异步/评分/技能/向量功能未被计为课程通过。
+第九课验证时工作区尚未提交；现已提交并推送到开发分支codex/lesson09-security，见[提交索引](reports/submission-commits.md)；真实模型实验与另一组员独立复核仍需外部条件，缺失的异步/评分/技能/向量功能未被计为课程通过。
 
 ## 第十课交付与验证
 
